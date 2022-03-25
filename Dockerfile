@@ -18,9 +18,8 @@ COPY --from=builder /go/src/atsGo/main .
 RUN \
   mkdir ./data && \
   mkdir ./data/db && \
-  mkdir ./static && \
-  mkdir ./static/assets && \
-  mkdir ./static/assets/images && \
+  mkdir ./assets && \
+  mkdir ./assets/images && \
   mkdir ./backup && \
   mkdir ./fsData && \
   mkdir ./fsData/thumb && \
@@ -29,15 +28,15 @@ RUN \
 
 COPY backup/*.json ./backup/
 COPY backup/*.gz ./backup/
-COPY static/*.html ./static/
-COPY static/*.yaml ./static/
-COPY static/assets/*js ./static/assets/
-COPY static/assets/*css ./static/assets/
-COPY static/assets/images/*webp ./static/assets/images/
-COPY static/assets/images/*jpg ./static/assets/images/
+COPY assets/*.html ./assets/
+COPY assets/*.yaml ./assets/
+COPY assets/*js ./assets/
+COPY assets/*css ./assets/
+COPY assets/images/*webp ./assets/images/
+COPY assets/images/*jpg ./assets/images/
 
 RUN \
-  chmod -R +rwx ./static && \
+  chmod -R +rwx ./assets && \
   chmod -R +rwx ./fsData && \
   chmod -R +rwx ./logs && \
   chmod -R +rwx ./backup

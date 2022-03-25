@@ -8,13 +8,6 @@ import (
 	"encoding/hex"
 	"encoding/json"
 	"fmt"
-	"github.com/gorilla/handlers"
-	"github.com/gorilla/mux"
-	"go.mongodb.org/mongo-driver/bson"
-	"go.mongodb.org/mongo-driver/mongo"
-	"go.mongodb.org/mongo-driver/mongo/options"
-	"gopkg.in/gomail.v2"
-	"gopkg.in/yaml.v2"
 	"html/template"
 	"io/ioutil"
 	"log"
@@ -24,6 +17,14 @@ import (
 	"strconv"
 	"strings"
 	"time"
+
+	"github.com/gorilla/handlers"
+	"github.com/gorilla/mux"
+	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/mongo/options"
+	"gopkg.in/gomail.v2"
+	"gopkg.in/yaml.v2"
 )
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -87,13 +88,13 @@ func CheckError(err error, msg string) {
 ///////////////////////////////////////////////////////////////////////////////
 
 func ShowIndex(w http.ResponseWriter, r *http.Request) {
-	tmppath := "./static/index.html"
+	tmppath := "./assets/index.html"
 	tmpl := template.Must(template.ParseFiles(tmppath))
 	tmpl.Execute(w, tmpl)
 }
 
 func ShowAdmin(w http.ResponseWriter, r *http.Request) {
-	showtmppath := "./static/admin.html"
+	showtmppath := "./assets/admin.html"
 	showtmpl := template.Must(template.ParseFiles(showtmppath))
 	showtmpl.Execute(w, showtmpl)
 }
@@ -293,7 +294,7 @@ func BackupReviewHandler(w http.ResponseWriter, r *http.Request) {
 // 	if err = cur.All(context.TODO(), &allPage1); err != nil {
 // 		log.Fatal(err)
 // 	}
-// 	tmpl2 := template.Must(template.ParseFiles("./static/gallery.html"))
+// 	tmpl2 := template.Must(template.ParseFiles("./assets/gallery.html"))
 // 	tmpl2.Execute(w, allPage1)
 // }
 
@@ -311,7 +312,7 @@ func BackupReviewHandler(w http.ResponseWriter, r *http.Request) {
 // 	if err = cur.All(context.TODO(), &allPage2); err != nil {
 // 		log.Fatal(err)
 // 	}
-// 	tmpl2 := template.Must(template.ParseFiles("./static/gallery.html"))
+// 	tmpl2 := template.Must(template.ParseFiles("./assets/gallery.html"))
 // 	tmpl2.Execute(w, allPage2)
 // }
 
@@ -336,7 +337,7 @@ func AtsGoFindOnePic(db string, coll string, filtertype string, filterstring str
 // 	fmt.Println(pid)
 // 	pic := AtsGoFindOnePic("picdb", "portrait", "picid", pid)
 // 	fmt.Println(pic)
-// 	tmpl2 := template.Must(template.ParseFiles("./static/zoom.html"))
+// 	tmpl2 := template.Must(template.ParseFiles("./assets/zoom.html"))
 // 	tmpl2.Execute(w, pic)
 // }
 
@@ -346,7 +347,7 @@ func AtsGoFindOnePic(db string, coll string, filtertype string, filterstring str
 // 	fmt.Println(picid2)
 // 	pic2 := AtsGoFindOnePic("picdb", "landscape", "picid", picid2)
 // 	fmt.Println(pic2)
-// 	tmpl2 := template.Must(template.ParseFiles("./static/zoom.html"))
+// 	tmpl2 := template.Must(template.ParseFiles("./assets/zoom.html"))
 // 	tmpl2.Execute(w, pic2)
 // }
 
@@ -375,7 +376,7 @@ type PicStruct struct {
 }
 
 func init() {
-	data, err := ioutil.ReadFile("./static/review1.yaml")
+	data, err := ioutil.ReadFile("./assets/review1.yaml")
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -387,7 +388,7 @@ func init() {
 	fmt.Println(rev1)
 	AlphaT_Insert("maindb", "main", rev1)
 
-	data2, err := ioutil.ReadFile("./static/review2.yaml")
+	data2, err := ioutil.ReadFile("./assets/review2.yaml")
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -399,7 +400,7 @@ func init() {
 	fmt.Println(rev2)
 	AlphaT_Insert("maindb", "main", rev2)
 
-	data3, err := ioutil.ReadFile("./static/fake1.yaml")
+	data3, err := ioutil.ReadFile("./assets/fake1.yaml")
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -411,7 +412,7 @@ func init() {
 	fmt.Println(rev3)
 	AlphaT_Insert("maindb", "main", rev3)
 
-	data4, err := ioutil.ReadFile("./static/fake2.yaml")
+	data4, err := ioutil.ReadFile("./assets/fake2.yaml")
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -423,7 +424,7 @@ func init() {
 	fmt.Println(rev4)
 	AlphaT_Insert("maindb", "main", rev4)
 
-	g1, _ := filepath.Glob("./static/gallery/landscape/*.webp")
+	g1, _ := filepath.Glob("./assets/gallery/landscape/*.webp")
 
 	countPage := 1
 	for idx, g := range g1 {
@@ -453,7 +454,7 @@ func init() {
 		}
 	}
 
-	g2, _ := filepath.Glob("./static/gallery/portrait/*.webp")
+	g2, _ := filepath.Glob("./assets/gallery/portrait/*.webp")
 	countPage2 := 0
 	for idx, gg := range g2 {
 		if strings.Contains(gg, "_thumb") {
@@ -497,7 +498,7 @@ func main() {
 	r.HandleFunc("/Backup", BackupReviewHandler)
 	r.HandleFunc("/DeleteReview", SetReviewToDeleteHandler)
 	r.HandleFunc("/atq", AddToQuarantineHandler)
-	r.PathPrefix("/static/").Handler(http.StripPrefix("/static/", http.FileServer(http.Dir("./static/"))))
+	// r.PathPrefix("/assets/").Handler(http.StripPrefix("/assets/", http.FileServer(http.Dir("./assets/"))))
 	r.PathPrefix("/assets/").Handler(http.StripPrefix("/assets/", http.FileServer(http.Dir("./assets/"))))
 	// port := ":80"
 	// http.ListenAndServe(port, (r))

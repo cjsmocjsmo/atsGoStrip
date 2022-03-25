@@ -111,7 +111,7 @@ $(document).on("click", "#revInput", function (event) {
 
 $(document).ready(function () {
     // fadeinout();
-    // initLoadReviews();
+    initLoadReviews();
     initLoadQReviews();
 });
 
