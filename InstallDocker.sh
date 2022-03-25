@@ -10,10 +10,10 @@
 # apt-get auto-remove -y && \
 # apt-get install -y docker-ce docker-ce-cli containerd.io
 
-docker run docker/compose:1.29.2 version && \
+docker run docker/compose:1.29.2 version;
 echo alias docker-compose="'"'docker run --rm \
     -v /var/run/docker.sock:/var/run/docker.sock \
     -v "$PWD:$PWD" \
     -w="$PWD" \
-    docker/compose:1.29.2'"'" >> ~/.bashrc && \
-source ~/.bashrc
+    docker/compose:1.29.2'"'" >> ~/.bashrc;
+source ~/.bashrc;

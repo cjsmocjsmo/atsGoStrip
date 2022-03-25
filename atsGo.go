@@ -498,6 +498,7 @@ func main() {
 	r.HandleFunc("/DeleteReview", SetReviewToDeleteHandler)
 	r.HandleFunc("/atq", AddToQuarantineHandler)
 	r.PathPrefix("/static/").Handler(http.StripPrefix("/static/", http.FileServer(http.Dir("./static/"))))
+	r.PathPrefix("/assets/").Handler(http.StripPrefix("/assets/", http.FileServer(http.Dir("./assets/"))))
 	// port := ":80"
 	// http.ListenAndServe(port, (r))
 
