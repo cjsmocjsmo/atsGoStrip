@@ -29,14 +29,10 @@ RUN \
 
 COPY backup/*.json ./backup/
 COPY backup/*.gz ./backup/
-
 COPY static/*.html ./static/
 COPY static/*.yaml ./static/
-
 COPY static/assets/*js ./static/assets/
 COPY static/assets/*css ./static/assets/
-COPY static/assets/*svg ./static/assets/
-
 COPY static/assets/images/*webp ./static/assets/images/
 COPY static/assets/images/*jpg ./static/assets/images/
 
