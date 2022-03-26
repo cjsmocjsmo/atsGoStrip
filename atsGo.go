@@ -1,7 +1,7 @@
 package main
 
 import (
-	"bufio"
+	// "bufio"
 	"compress/gzip"
 	"context"
 	"crypto/rand"
@@ -178,6 +178,29 @@ func AllQuarintineReviewsHandler(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(&allQRevs)
 }
 
+func AllApprovedReviews() bool {
+	result := false
+	filter := bson.M{"approved": "yes", "quarintine": "no", "delete": "no"}
+	opts := options.Find()
+	opts.SetProjection(bson.M{"_id": 0})
+	client, ctx, cancel, err := Connect("mongodb://db:27017/atsgodb")
+	defer Close(client, ctx, cancel)
+	CheckError(err, "MongoDB connection has failed")
+	coll := client.Database("maindb").Collection("main")
+	cur, err := coll.Find(context.TODO(), filter, opts)
+	CheckError(err, "AllReviews find has failed")
+	var allRevs []ReviewStruct
+	if err = cur.All(context.TODO(), &allRevs); err != nil {
+		return result
+	}
+	if len(allRevs) != 0 {
+		result = true
+	}
+	log.Println("AllReviews Info Complete")
+	return result
+
+}
+
 func AllApprovedReviewsHandler(w http.ResponseWriter, r *http.Request) {
 	filter := bson.M{"approved": "yes", "quarintine": "no", "delete": "no"}
 	opts := options.Find()
@@ -250,34 +273,39 @@ func BackupReviewHandler(w http.ResponseWriter, r *http.Request) {
 		log.Fatal(err)
 	}
 	bString, _ := json.Marshal(allRevs)
+
 	err = ioutil.WriteFile("/root/backup/backup.json", bString, 0644)
 	if err != nil {
 		log.Fatal(err)
 	}
-	name_of_file := "backup.json"
-	f, _ := os.Open("/root/backup/" + name_of_file)
-	read := bufio.NewReader(f)
-	data, _ := ioutil.ReadAll(read)
-	name_of_file = strings.Replace(name_of_file, ".json", ".gz", -1)
-	f, _ = os.Create("/root/backup/" + name_of_file)
-	ww := gzip.NewWriter(f)
-	ww.Write(data)
-	ww.Close()
+
+	bStringBytes := []byte(bString)
+
+	// f, _ := os.Open("/root/backup/backup.json")
 	t := time.Now().Format(time.RFC3339)
-	tstring := string(t)
-	s := "<p>AlphaTreeService Reviews Backup for: " + tstring + "</p>"
-	fmt.Println("this is s")
-	fmt.Println(s)
-	m := gomail.NewMessage()
-	m.SetHeader("From", "porthose.cjsmo.cjsmo@gmail.com")
-	m.SetHeader("To", "porthose.cjsmo.cjsmo@gmail.com", "Alpha.treeservicecdm@gmail.com")
-	m.SetHeader("Subject: AlphaTreeService Reviews Backup")
-	m.SetBody("text/html", s)
-	m.Attach("/root/backup/" + name_of_file)
-	d := gomail.NewDialer("smtp.gmail.com", 587, "porthose.cjsmo.cjsmo@gmail.com", "!Porthose1960")
-	if err := d.DialAndSend(m); err != nil {
-		panic(err)
-	}
+	new_file_name := "/root/backup/" + t + "_backup.gz"
+	newFile, _ := os.Create(new_file_name)
+
+	// read := bufio.NewReader(f)
+	// data, _ := ioutil.ReadAll(read)
+	// name_of_file = strings.Replace(name_of_file, ".json", ".gz", -1)
+	// f, _ = os.Create("/root/backup/" + name_of_file)
+	ww := gzip.NewWriter(newFile)
+	ww.Write(bStringBytes)
+	ww.Close()
+
+	fmt.Println("this is new_file_name")
+	fmt.Println(new_file_name)
+	// m := gomail.NewMessage()
+	// m.SetHeader("From", "porthose.cjsmo.cjsmo@gmail.com")
+	// m.SetHeader("To", "porthose.cjsmo.cjsmo@gmail.com", "Alpha.treeservicecdm@gmail.com")
+	// m.SetHeader("Subject: AlphaTreeService Reviews Backup")
+	// m.SetBody("text/html", s)
+	// m.Attach("/root/backup/" + name_of_file)
+	// d := gomail.NewDialer("smtp.gmail.com", 587, "porthose.cjsmo.cjsmo@gmail.com", "!Porthose1960")
+	// if err := d.DialAndSend(m); err != nil {
+	// 	panic(err)
+	// }
 }
 
 // func ShowGalleryPage1Handler(w http.ResponseWriter, r *http.Request) {
@@ -376,53 +404,58 @@ type PicStruct struct {
 }
 
 func init() {
-	data, err := ioutil.ReadFile("./assets/review1.yaml")
-	if err != nil {
-		log.Fatal(err)
-	}
-	var rev1 ReviewStruct
-	if err := rev1.Parse(data); err != nil {
-		log.Fatal(err)
-	}
-	fmt.Println(rev1)
-	AlphaT_Insert("maindb", "main", rev1)
-	os.Remove("./assets/review1.yaml")
+	if AllApprovedReviews() {
+		fmt.Println("Db present do nothing")
+	} else {
 
-	data2, err := ioutil.ReadFile("./assets/review2.yaml")
-	if err != nil {
-		log.Fatal(err)
-	}
-	var rev2 ReviewStruct
-	if err := rev2.Parse(data2); err != nil {
-		log.Fatal(err)
-	}
-	fmt.Println(rev2)
-	AlphaT_Insert("maindb", "main", rev2)
-	os.Remove("./assets/review2.yaml")
+		data, err := ioutil.ReadFile("./assets/review1.yaml")
+		if err != nil {
+			log.Fatal(err)
+		}
+		var rev1 ReviewStruct
+		if err := rev1.Parse(data); err != nil {
+			log.Fatal(err)
+		}
+		fmt.Println(rev1)
+		AlphaT_Insert("maindb", "main", rev1)
+		os.Remove("./assets/review1.yaml")
 
-	data3, err := ioutil.ReadFile("./assets/fake1.yaml")
-	if err != nil {
-		log.Fatal(err)
-	}
-	var rev3 ReviewStruct
-	if err := rev3.Parse(data3); err != nil {
-		log.Fatal(err)
-	}
-	fmt.Println(rev3)
-	AlphaT_Insert("maindb", "main", rev3)
-	os.Remove("./assets/fake1.yaml")
+		data2, err := ioutil.ReadFile("./assets/review2.yaml")
+		if err != nil {
+			log.Fatal(err)
+		}
+		var rev2 ReviewStruct
+		if err := rev2.Parse(data2); err != nil {
+			log.Fatal(err)
+		}
+		fmt.Println(rev2)
+		AlphaT_Insert("maindb", "main", rev2)
+		os.Remove("./assets/review2.yaml")
 
-	data4, err := ioutil.ReadFile("./assets/fake2.yaml")
-	if err != nil {
-		log.Fatal(err)
+		data3, err := ioutil.ReadFile("./assets/fake1.yaml")
+		if err != nil {
+			log.Fatal(err)
+		}
+		var rev3 ReviewStruct
+		if err := rev3.Parse(data3); err != nil {
+			log.Fatal(err)
+		}
+		fmt.Println(rev3)
+		AlphaT_Insert("maindb", "main", rev3)
+		os.Remove("./assets/fake1.yaml")
+
+		data4, err := ioutil.ReadFile("./assets/fake2.yaml")
+		if err != nil {
+			log.Fatal(err)
+		}
+		var rev4 ReviewStruct
+		if err := rev4.Parse(data4); err != nil {
+			log.Fatal(err)
+		}
+		fmt.Println(rev4)
+		AlphaT_Insert("maindb", "main", rev4)
+		os.Remove("./assets/fake2.yaml")
 	}
-	var rev4 ReviewStruct
-	if err := rev4.Parse(data4); err != nil {
-		log.Fatal(err)
-	}
-	fmt.Println(rev4)
-	AlphaT_Insert("maindb", "main", rev4)
-	os.Remove("./assets/fake2.yaml")
 }
 
 func main() {

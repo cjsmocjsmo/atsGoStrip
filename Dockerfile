@@ -10,7 +10,13 @@ RUN export GOPATH=/go/src/atsGo
 RUN go get -v /go/src/atsGo
 RUN CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -o main /go/src/atsGo
 
-FROM alpine:latest
+# FROM alpine:latest
+FROM debian:bullseye 
+RUN \
+  apt-get update && \
+  apt-get dist-upgrade -y && \
+  apt-get install -y nano
+
 WORKDIR /root/
 
 COPY --from=builder /go/src/atsGo/main .
