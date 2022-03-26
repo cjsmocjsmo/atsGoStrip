@@ -13,8 +13,8 @@ import (
 	"log"
 	"net/http"
 	"os"
-	"path/filepath"
-	"strconv"
+	// "path/filepath"
+	// "strconv"
 	"strings"
 	"time"
 
@@ -380,108 +380,49 @@ func init() {
 	if err != nil {
 		log.Fatal(err)
 	}
-
 	var rev1 ReviewStruct
 	if err := rev1.Parse(data); err != nil {
 		log.Fatal(err)
 	}
 	fmt.Println(rev1)
 	AlphaT_Insert("maindb", "main", rev1)
+	os.Remove("./assets/review1.yaml")
 
 	data2, err := ioutil.ReadFile("./assets/review2.yaml")
 	if err != nil {
 		log.Fatal(err)
 	}
-
 	var rev2 ReviewStruct
 	if err := rev2.Parse(data2); err != nil {
 		log.Fatal(err)
 	}
 	fmt.Println(rev2)
 	AlphaT_Insert("maindb", "main", rev2)
+	os.Remove("./assets/review2.yaml")
 
 	data3, err := ioutil.ReadFile("./assets/fake1.yaml")
 	if err != nil {
 		log.Fatal(err)
 	}
-
 	var rev3 ReviewStruct
 	if err := rev3.Parse(data3); err != nil {
 		log.Fatal(err)
 	}
 	fmt.Println(rev3)
 	AlphaT_Insert("maindb", "main", rev3)
+	os.Remove("./assets/fake1.yaml")
 
 	data4, err := ioutil.ReadFile("./assets/fake2.yaml")
 	if err != nil {
 		log.Fatal(err)
 	}
-
 	var rev4 ReviewStruct
 	if err := rev4.Parse(data4); err != nil {
 		log.Fatal(err)
 	}
 	fmt.Println(rev4)
 	AlphaT_Insert("maindb", "main", rev4)
-
-	g1, _ := filepath.Glob("./assets/gallery/landscape/*.webp")
-
-	countPage := 1
-	for idx, g := range g1 {
-		if strings.Contains(g, "_thumb") {
-			println("this is thumb")
-		} else {
-			var newpic PicStruct
-			if strings.Contains(g, "landscape") {
-				newpic.Orient = false // "landscape"
-			} else {
-				newpic.Orient = true //"portrait"
-			}
-			newpic.PicID, _ = UUID()
-			newpic.Pic = os.Getenv("ATSGO_SERVER_ADDR") + "/" + g
-			fmt.Println(newpic.Pic)
-			ext := filepath.Ext(g)
-			newpic.Thumb = os.Getenv("ATSGO_SERVER_ADDR") + "/" + g[:len(g)-5] + "_thumb" + ext
-			fmt.Println(newpic.Thumb)
-			if idx%50 == 0 {
-				countPage += 1
-				newpic.Page = strconv.Itoa(countPage)
-				AlphaT_Insert_Pics("picdb", "landscape", newpic)
-			} else {
-				newpic.Page = strconv.Itoa(countPage)
-				AlphaT_Insert_Pics("picdb", "landscape", newpic)
-			}
-		}
-	}
-
-	g2, _ := filepath.Glob("./assets/gallery/portrait/*.webp")
-	countPage2 := 0
-	for idx, gg := range g2 {
-		if strings.Contains(gg, "_thumb") {
-			println("this is thumb")
-		} else {
-			var newpic PicStruct
-			if strings.Contains(gg, "landscape") {
-				newpic.Orient = false //"landscape"
-			} else {
-				newpic.Orient = true //"portrait"
-			}
-			newpic.PicID, _ = UUID()
-			newpic.Pic = "./" + gg
-			fmt.Println(newpic.Pic)
-			ext := filepath.Ext(gg)
-			newpic.Thumb = "./" + gg[:len(gg)-5] + "_thumb" + ext
-			fmt.Println(newpic.Thumb)
-			if idx%50 == 0 {
-				countPage2 += 1
-				newpic.Page = strconv.Itoa(countPage2)
-				AlphaT_Insert_Pics("picdb", "portrait", newpic)
-			} else {
-				newpic.Page = strconv.Itoa(countPage2)
-				AlphaT_Insert_Pics("picdb", "portrait", newpic)
-			}
-		}
-	}
+	os.Remove("./assets/fake2.yaml")
 }
 
 func main() {
