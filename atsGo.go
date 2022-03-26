@@ -23,7 +23,7 @@ import (
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
-	"gopkg.in/gomail.v2"
+	// "gopkg.in/gomail.v2"
 	"gopkg.in/yaml.v2"
 )
 
@@ -145,18 +145,18 @@ func AddToQuarantineHandler(w http.ResponseWriter, r *http.Request) {
 		Delete:     "no",
 	}
 	AlphaT_Insert("maindb", "main", newReview)
-	m1 := "<p>A new review was posted</p>"
-	m2 := "<a href='http://34.127.50.188/Admin'>AlphaTreeService Admin Page</>"
-	m3 := m1 + m2
-	m := gomail.NewMessage()
-	m.SetHeader("From", "porthose.cjsmo.cjsmo@gmail.com")
-	m.SetHeader("To", "porthose.cjsmo.cjsmo@gmail.com", "Alpha.treeservicecdm@gmail.com")
-	m.SetHeader("Subject: NEW REVIEW Has Been Posted")
-	m.SetBody("text/html", m3)
-	d := gomail.NewDialer("smtp.gmail.com", 587, "porthose.cjsmo.cjsmo@gmail.com", "!Porthose1960")
-	if err := d.DialAndSend(m); err != nil {
-		panic(err)
-	}
+	// m1 := "<p>A new review was posted</p>"
+	// m2 := "<a href='http://34.127.50.188/Admin'>AlphaTreeService Admin Page</>"
+	// m3 := m1 + m2
+	// m := gomail.NewMessage()
+	// m.SetHeader("From", "porthose.cjsmo.cjsmo@gmail.com")
+	// m.SetHeader("To", "porthose.cjsmo.cjsmo@gmail.com", "Alpha.treeservicecdm@gmail.com")
+	// m.SetHeader("Subject: NEW REVIEW Has Been Posted")
+	// m.SetBody("text/html", m3)
+	// d := gomail.NewDialer("smtp.gmail.com", 587, "porthose.cjsmo.cjsmo@gmail.com", "!Porthose1960")
+	// if err := d.DialAndSend(m); err != nil {
+	// 	panic(err)
+	// }
 }
 
 func AllQuarintineReviewsHandler(w http.ResponseWriter, r *http.Request) {
@@ -280,16 +280,9 @@ func BackupReviewHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	bStringBytes := []byte(bString)
-
-	// f, _ := os.Open("/root/backup/backup.json")
 	t := time.Now().Format(time.RFC3339)
 	new_file_name := "/root/backup/" + t + "_backup.gz"
 	newFile, _ := os.Create(new_file_name)
-
-	// read := bufio.NewReader(f)
-	// data, _ := ioutil.ReadAll(read)
-	// name_of_file = strings.Replace(name_of_file, ".json", ".gz", -1)
-	// f, _ = os.Create("/root/backup/" + name_of_file)
 	ww := gzip.NewWriter(newFile)
 	ww.Write(bStringBytes)
 	ww.Close()
