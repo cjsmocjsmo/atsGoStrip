@@ -1,3 +1,15 @@
+# FROM node:14bullseye-slim AS nodebuilder
+# WORKDIR /home/node
+# RUN \
+#   apt-get -y install git nodejs npm && \
+#   cd /root && \
+#   git clone http://github.com/cjsmocjsmo/AlphaTreeService && \
+#   cd AlphaTreeService && \
+#   npm install && \
+#   npm run build
+
+
+
 FROM golang:bullseye AS builder
 RUN mkdir /go/src/atsGo
 WORKDIR /go/src/atsGo

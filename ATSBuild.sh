@@ -1,6 +1,6 @@
 #!/bin/sh
 rm /home/charliepi/go/atsGoStrip/assets/index.html;
-rm /home/charliepi/go/atsGoStrip/assets/*.js;
+rm /home/charliepi/go/atsGoStrip/assets/atsGo.js;
 rm /home/charliepi/go/atsGoStrip/assets/index*.css;
 rm -rf /home/charliepi/go/atsGoStrip/assets/images
 
