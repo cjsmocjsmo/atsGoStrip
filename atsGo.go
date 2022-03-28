@@ -13,6 +13,9 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"path/filepath"
+	"sort"
+
 	// "path/filepath"
 	// "strconv"
 	"strings"
@@ -23,6 +26,7 @@ import (
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
+
 	// "gopkg.in/gomail.v2"
 	"gopkg.in/yaml.v2"
 )
@@ -107,13 +111,13 @@ func AlphaT_Insert(db string, coll string, ablob ReviewStruct) {
 	CheckError(err2, "AlphaT_Insert_has failed")
 }
 
-func AlphaT_Insert_Pics(db string, coll string, picinfo PicStruct) {
-	client, ctx, cancel, err := Connect("mongodb://db:27017/atsgodb")
-	CheckError(err, "AlphaT_Insert_Pics: Connections has failed")
-	defer Close(client, ctx, cancel)
-	_, err2 := InsertOne(client, ctx, db, coll, picinfo)
-	CheckError(err2, "AlphaT_Insert_Picshas failed")
-}
+// func AlphaT_Insert_Pics(db string, coll string, picinfo PicStruct) {
+// 	client, ctx, cancel, err := Connect("mongodb://db:27017/atsgodb")
+// 	CheckError(err, "AlphaT_Insert_Pics: Connections has failed")
+// 	defer Close(client, ctx, cancel)
+// 	_, err2 := InsertOne(client, ctx, db, coll, picinfo)
+// 	CheckError(err2, "AlphaT_Insert_Picshas failed")
+// }
 
 func AddToQuarantineHandler(w http.ResponseWriter, r *http.Request) {
 	uuid, _ := UUID()
@@ -337,20 +341,20 @@ func BackupReviewHandler(w http.ResponseWriter, r *http.Request) {
 // 	tmpl2.Execute(w, allPage2)
 // }
 
-func AtsGoFindOnePic(db string, coll string, filtertype string, filterstring string) PicStruct {
-	filter := bson.M{filtertype: filterstring}
-	client, ctx, cancel, err := Connect("mongodb://db:27017/atsgodb")
-	defer Close(client, ctx, cancel)
-	CheckError(err, "AtsGoFindOnePic: MongoDB connection has failed")
-	collection := client.Database(db).Collection(coll)
-	var results PicStruct
-	err = collection.FindOne(context.Background(), filter).Decode(&results)
-	if err != nil {
-		log.Println("AtsGoFindOnePic: find one has fucked up")
-		log.Fatal(err)
-	}
-	return results
-}
+// func AtsGoFindOnePic(db string, coll string, filtertype string, filterstring string) PicStruct {
+// 	filter := bson.M{filtertype: filterstring}
+// 	client, ctx, cancel, err := Connect("mongodb://db:27017/atsgodb")
+// 	defer Close(client, ctx, cancel)
+// 	CheckError(err, "AtsGoFindOnePic: MongoDB connection has failed")
+// 	collection := client.Database(db).Collection(coll)
+// 	var results PicStruct
+// 	err = collection.FindOne(context.Background(), filter).Decode(&results)
+// 	if err != nil {
+// 		log.Println("AtsGoFindOnePic: find one has fucked up")
+// 		log.Fatal(err)
+// 	}
+// 	return results
+// }
 
 // func ZoomPic1Handler(w http.ResponseWriter, r *http.Request) {
 // 	// portrait
@@ -371,6 +375,13 @@ func AtsGoFindOnePic(db string, coll string, filtertype string, filterstring str
 // 	tmpl2 := template.Must(template.ParseFiles("./assets/zoom.html"))
 // 	tmpl2.Execute(w, pic2)
 // }
+func getAllBackupsHandler(w http.ResponseWriter, r *http.Request) {
+	files, _ := filepath.Glob("/root/backup/*.gz")
+	sort.Strings(files)
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(files)
+	log.Println("AllQuarintineReviews Info Complete")
+}
 
 type ReviewStruct struct {
 	UUID       string `yaml:"UUID"`
@@ -388,13 +399,13 @@ func (c *ReviewStruct) Parse(data []byte) error {
 	return yaml.Unmarshal(data, c)
 }
 
-type PicStruct struct {
-	PicID  string `bson:"picid"`
-	Pic    string `bson:"pic"`
-	Thumb  string `bson:"thumb"`
-	Page   string `bson:"page"`
-	Orient bool   `bson:"orient"`
-}
+// type PicStruct struct {
+// 	PicID  string `bson:"picid"`
+// 	Pic    string `bson:"pic"`
+// 	Thumb  string `bson:"thumb"`
+// 	Page   string `bson:"page"`
+// 	Orient bool   `bson:"orient"`
+// }
 
 func init() {
 	if AllApprovedReviews() {
@@ -448,6 +459,8 @@ func init() {
 		fmt.Println(rev4)
 		AlphaT_Insert("maindb", "main", rev4)
 		os.Remove("./assets/fake2.yaml")
+
+		os.Remove("/root/backup/backup.gz")
 	}
 }
 
@@ -455,6 +468,8 @@ func main() {
 	r := mux.NewRouter()
 	r.HandleFunc("/", ShowIndex)
 	r.HandleFunc("/admin", ShowAdmin)
+
+	r.HandleFunc("/getAllBackups", getAllBackupsHandler)
 	// r.HandleFunc("/galleryp1", ShowGalleryPage1Handler)
 	// r.HandleFunc("/galleryp2", ShowGalleryPage2Handler)
 	// r.HandleFunc("/zoompic1", ZoomPic1Handler)
@@ -467,11 +482,14 @@ func main() {
 	r.HandleFunc("/atq", AddToQuarantineHandler)
 	// r.PathPrefix("/assets/").Handler(http.StripPrefix("/assets/", http.FileServer(http.Dir("./assets/"))))
 	r.PathPrefix("/assets/").Handler(http.StripPrefix("/assets/", http.FileServer(http.Dir("./assets/"))))
-	// port := ":80"
-	// http.ListenAndServe(port, (r))
 
-	http.ListenAndServe(":80", handlers.CORS(handlers.AllowedHeaders([]string{"X-Requested-With", "Content-Type", "Authorization"}),
-		handlers.AllowedMethods([]string{"GET", "POST", "PUT", "HEAD", "OPTIONS"}),
-		handlers.AllowedOrigins([]string{"*"}))(r))
+	// http.ListenAndServe(":80", handlers.CORS(handlers.AllowedHeaders([]string{"X-Requested-With", "Content-Type", "Authorization"}),
+	// 	handlers.AllowedMethods([]string{"GET", "POST", "PUT", "HEAD", "OPTIONS"}),
+	// 	handlers.AllowedOrigins([]string{"*"}))(r))
+
+	http.ListenAndServeTLS(":80", "/root/atsio.crt", "/root/atsio.key",
+		handlers.CORS(handlers.AllowedHeaders([]string{"X-Requested-With", "Content-Type", "Authorization"}),
+			handlers.AllowedMethods([]string{"GET", "POST", "PUT", "HEAD", "OPTIONS"}),
+			handlers.AllowedOrigins([]string{"*"}))(r))
 
 }

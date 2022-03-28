@@ -11,11 +11,7 @@ RUN go get -v /go/src/atsGo
 RUN CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -o main /go/src/atsGo
 
 # FROM alpine:latest
-FROM debian:bullseye 
-RUN \
-  apt-get update && \
-  apt-get dist-upgrade -y && \
-  apt-get install -y nano
+FROM cjsmocjsmo/ats:01 
 
 WORKDIR /root/
 
@@ -27,9 +23,10 @@ RUN \
   mkdir ./assets && \
   mkdir ./assets/images && \
   mkdir ./backup && \
-  mkdir ./fsData && \
-  mkdir ./fsData/thumb && \
-  mkdir ./fsData/crap && \
+  mkdir ./uploads && \
+  # mkdir ./fsData && \
+  # mkdir ./fsData/thumb && \
+  # mkdir ./fsData/crap && \
   mkdir ./logs
 
 COPY backup/*.json ./backup/
@@ -43,7 +40,7 @@ COPY assets/images/*jpg ./assets/images/
 
 RUN \
   chmod -R +rwx ./assets && \
-  chmod -R +rwx ./fsData && \
+  # chmod -R +rwx ./fsData && \
   chmod -R +rwx ./logs && \
   chmod -R +rwx ./backup
 
