@@ -1,7 +1,7 @@
 function initLoadBackups() {
     $('.backupsadmin').empty();
-    // $.get('http://alphatree.services/getAllBackups', function (data) {
-    $.get('http://192.168.0.90/getAllBackups', function (data) {
+    $.get('http://alphatree.services/getAllBackups', function (data) {
+    // $.get('http://192.168.0.90/getAllBackups', function (data) {
         console.log(data);
         if (data == null) {
             let foo = "<p>No Backups present</p>"
@@ -17,8 +17,8 @@ function initLoadBackups() {
 
 function initLoadReviews() {
     $('.review1').empty();
-    // $.get('http://alphatree.services/AllApprovedReviews', function (data) {
-    $.get('http://192.168.0.90/AllApprovedReviews', function (data) {
+    $.get('http://alphatree.services/AllApprovedReviews', function (data) {
+    // $.get('http://192.168.0.90/AllApprovedReviews', function (data) {
         console.log(data);
         if (data == null) {
             let foo = "<p>No Reviews To Process</p>"
@@ -38,8 +38,8 @@ function initLoadReviews() {
 }
 function initLoadQReviews() {
     $('.reviewadmin').empty();
-    // $.get('http://alphatree.services/AllQReviews', function (data) {
-    $.get('http://192.168.0.90/AllQReviews', function (data) {
+    $.get('http://alphatree.services/AllQReviews', function (data) {
+    // $.get('http://192.168.0.90/AllQReviews', function (data) {
         console.log(data);
         if (data == null) {
             let foo = "<p>No Reviews To Process</p>"
