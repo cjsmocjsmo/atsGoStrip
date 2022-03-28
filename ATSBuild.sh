@@ -10,5 +10,5 @@ mv /home/charliepi/astro/AlphaTreeService/dist/index.html /home/charliepi/go/ats
 mv /home/charliepi/astro/AlphaTreeService/dist/assets/*.js /home/charliepi/go/atsGoStrip/assets/;
 mv /home/charliepi/astro/AlphaTreeService/dist/assets/*.css /home/charliepi/go/atsGoStrip/assets/;
 mv /home/charliepi/astro/AlphaTreeService/dist/assets/images /home/charliepi/go/atsGoStrip/assets/;
-# cd /home/charliepi/go/atsGoStrip;
-# docker-compose up --build;
+cd /home/charliepi/go/atsGoStrip;
+docker-compose up --build;
