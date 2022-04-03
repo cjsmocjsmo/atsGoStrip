@@ -33,7 +33,7 @@ RUN \
   mkdir ./data && \
   mkdir ./data/db && \
   mkdir ./assets && \
-  mkdir ./assets/images && \
+  # mkdir ./assets/images && \
   mkdir ./backup && \
   mkdir ./uploads && \
   # mkdir ./fsData && \
@@ -46,9 +46,9 @@ COPY backup/*.gz ./backup/
 COPY assets/*.html ./assets/
 COPY assets/*.yaml ./assets/
 COPY assets/*js ./assets/
-COPY assets/*css ./assets/
-COPY assets/images/*webp ./assets/images/
-COPY assets/images/*jpg ./assets/images/
+# COPY assets/*css ./assets/
+# COPY assets/images/*webp ./assets/images/
+# COPY assets/images/*jpg ./assets/images/
 
 RUN \
   chmod -R +rwx ./assets && \
