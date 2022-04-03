@@ -92,9 +92,10 @@ func CheckError(err error, msg string) {
 ///////////////////////////////////////////////////////////////////////////////
 
 func ShowIndex(w http.ResponseWriter, r *http.Request) {
-	tmppath := "./assets/index.html"
-	tmpl := template.Must(template.ParseFiles(tmppath))
-	tmpl.Execute(w, tmpl)
+	http.Redirect(w, r, "https://alphatreeservice.pages.dev", http.StatusSeeOther)
+	// tmppath := "./assets/index.html"
+	// tmpl := template.Must(template.ParseFiles(tmppath))
+	// tmpl.Execute(w, tmpl)
 }
 
 func ShowAdmin(w http.ResponseWriter, r *http.Request) {
@@ -225,42 +226,42 @@ func AllApprovedReviewsHandler(w http.ResponseWriter, r *http.Request) {
 	log.Println("AllReviews Info Complete")
 }
 
-func SetReviewToDeleteHandler(w http.ResponseWriter, r *http.Request) {
-	var delUUID string = r.URL.Query().Get("uuid")
-	filter := bson.M{"uuid": delUUID}
-	update := bson.M{"$set": bson.M{"delete": "yes"}}
-	client, ctx, cancel, err := Connect("mongodb://db:27017/atsgodb")
-	defer Close(client, ctx, cancel)
-	CheckError(err, "MongoDB connection has failed")
-	UpdateOne(client, ctx, filter, "maindb", "main", update)
-}
+// func SetReviewToDeleteHandler(w http.ResponseWriter, r *http.Request) {
+// 	var delUUID string = r.URL.Query().Get("uuid")
+// 	filter := bson.M{"uuid": delUUID}
+// 	update := bson.M{"$set": bson.M{"delete": "yes"}}
+// 	client, ctx, cancel, err := Connect("mongodb://db:27017/atsgodb")
+// 	defer Close(client, ctx, cancel)
+// 	CheckError(err, "MongoDB connection has failed")
+// 	UpdateOne(client, ctx, filter, "maindb", "main", update)
+// }
 
-func ProcessQuarantineHandler(w http.ResponseWriter, r *http.Request) {
-	filter := bson.M{}
-	opts := options.Find()
-	opts.SetProjection(bson.M{"_id": 0})
-	client, ctx, cancel, err := Connect("mongodb://db:27017/atsgodb")
-	defer Close(client, ctx, cancel)
-	CheckError(err, "MongoDB connection has failed")
-	coll := client.Database("maindb").Collection("main")
-	cur, err := coll.Find(context.TODO(), filter, opts)
-	CheckError(err, "AllQuarintineReviews find has failed")
-	var allRevs []ReviewStruct
-	if err = cur.All(context.TODO(), &allRevs); err != nil {
-		log.Fatal(err)
-	}
-	for _, rev := range allRevs {
-		filter := bson.M{"uuid": rev.UUID}
-		update := bson.M{"$set": bson.M{"approved": "yes", "quarintine": "no"}}
-		client, ctx, cancel, err := Connect("mongodb://db:27017/atsgodb")
-		defer Close(client, ctx, cancel)
-		CheckError(err, "MongoDB connection has failed")
-		UpdateOne(client, ctx, filter, "maindb", "main", update)
-	}
-	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode("Update complete")
-	log.Println("AllQuarintineReviews Info Complete")
-}
+// func ProcessQuarantineHandler(w http.ResponseWriter, r *http.Request) {
+// 	filter := bson.M{}
+// 	opts := options.Find()
+// 	opts.SetProjection(bson.M{"_id": 0})
+// 	client, ctx, cancel, err := Connect("mongodb://db:27017/atsgodb")
+// 	defer Close(client, ctx, cancel)
+// 	CheckError(err, "MongoDB connection has failed")
+// 	coll := client.Database("maindb").Collection("main")
+// 	cur, err := coll.Find(context.TODO(), filter, opts)
+// 	CheckError(err, "AllQuarintineReviews find has failed")
+// 	var allRevs []ReviewStruct
+// 	if err = cur.All(context.TODO(), &allRevs); err != nil {
+// 		log.Fatal(err)
+// 	}
+// 	for _, rev := range allRevs {
+// 		filter := bson.M{"uuid": rev.UUID}
+// 		update := bson.M{"$set": bson.M{"approved": "yes", "quarintine": "no"}}
+// 		client, ctx, cancel, err := Connect("mongodb://db:27017/atsgodb")
+// 		defer Close(client, ctx, cancel)
+// 		CheckError(err, "MongoDB connection has failed")
+// 		UpdateOne(client, ctx, filter, "maindb", "main", update)
+// 	}
+// 	w.Header().Set("Content-Type", "application/json")
+// 	json.NewEncoder(w).Encode("Update complete")
+// 	log.Println("AllQuarintineReviews Info Complete")
+// }
 
 func BackupReviewHandler(w http.ResponseWriter, r *http.Request) {
 	filter := bson.M{}
@@ -476,9 +477,9 @@ func main() {
 	// r.HandleFunc("/zoompic2", ZoomPic2Handler)
 	r.HandleFunc("/AllQReviews", AllQuarintineReviewsHandler)
 	r.HandleFunc("/AllApprovedReviews", AllApprovedReviewsHandler)
-	r.HandleFunc("/ProcessQuarintine", ProcessQuarantineHandler)
+	// r.HandleFunc("/ProcessQuarintine", ProcessQuarantineHandler)
 	r.HandleFunc("/Backup", BackupReviewHandler)
-	r.HandleFunc("/DeleteReview", SetReviewToDeleteHandler)
+	// r.HandleFunc("/DeleteReview", SetReviewToDeleteHandler)
 	r.HandleFunc("/atq", AddToQuarantineHandler)
 	// r.PathPrefix("/assets/").Handler(http.StripPrefix("/assets/", http.FileServer(http.Dir("./assets/"))))
 	r.PathPrefix("/assets/").Handler(http.StripPrefix("/assets/", http.FileServer(http.Dir("./assets/"))))
