@@ -8,7 +8,7 @@ import (
 	"encoding/hex"
 	"encoding/json"
 	"fmt"
-	"html/template"
+	// "html/template"
 	"io/ioutil"
 	"log"
 	"net/http"
@@ -99,9 +99,10 @@ func ShowIndex(w http.ResponseWriter, r *http.Request) {
 }
 
 func ShowAdmin(w http.ResponseWriter, r *http.Request) {
-	showtmppath := "./assets/admin.html"
-	showtmpl := template.Must(template.ParseFiles(showtmppath))
-	showtmpl.Execute(w, showtmpl)
+	http.Redirect(w, r, "https://atsa-dminsvelte.vercel.app", http.StatusSeeOther)
+	// showtmppath := "./assets/admin.html"
+	// showtmpl := template.Must(template.ParseFiles(showtmppath))
+	// showtmpl.Execute(w, showtmpl)
 }
 
 func AlphaT_Insert(db string, coll string, ablob ReviewStruct) {
@@ -164,24 +165,24 @@ func AddToQuarantineHandler(w http.ResponseWriter, r *http.Request) {
 	// }
 }
 
-func AllQuarintineReviewsHandler(w http.ResponseWriter, r *http.Request) {
-	filter := bson.M{"approved": "no", "quarintine": "yes", "delete": "no"}
-	opts := options.Find()
-	opts.SetProjection(bson.M{"_id": 0})
-	client, ctx, cancel, err := Connect("mongodb://db:27017/atsgodb")
-	defer Close(client, ctx, cancel)
-	CheckError(err, "MongoDB connection has failed")
-	coll := client.Database("maindb").Collection("main")
-	cur, err := coll.Find(context.TODO(), filter, opts)
-	CheckError(err, "AllQuarintineReviews find has failed")
-	var allQRevs []ReviewStruct
-	if err = cur.All(context.TODO(), &allQRevs); err != nil {
-		log.Fatal(err)
-	}
-	log.Printf("%s this is AllQuarintineReviews-", allQRevs)
-	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(&allQRevs)
-}
+// func AllQuarintineReviewsHandler(w http.ResponseWriter, r *http.Request) {
+// 	filter := bson.M{"approved": "no", "quarintine": "yes", "delete": "no"}
+// 	opts := options.Find()
+// 	opts.SetProjection(bson.M{"_id": 0})
+// 	client, ctx, cancel, err := Connect("mongodb://db:27017/atsgodb")
+// 	defer Close(client, ctx, cancel)
+// 	CheckError(err, "MongoDB connection has failed")
+// 	coll := client.Database("maindb").Collection("main")
+// 	cur, err := coll.Find(context.TODO(), filter, opts)
+// 	CheckError(err, "AllQuarintineReviews find has failed")
+// 	var allQRevs []ReviewStruct
+// 	if err = cur.All(context.TODO(), &allQRevs); err != nil {
+// 		log.Fatal(err)
+// 	}
+// 	log.Printf("%s this is AllQuarintineReviews-", allQRevs)
+// 	w.Header().Set("Content-Type", "application/json")
+// 	json.NewEncoder(w).Encode(&allQRevs)
+// }
 
 func AllApprovedReviews() bool {
 	result := false
@@ -206,25 +207,25 @@ func AllApprovedReviews() bool {
 
 }
 
-func AllApprovedReviewsHandler(w http.ResponseWriter, r *http.Request) {
-	filter := bson.M{"approved": "yes", "quarintine": "no", "delete": "no"}
-	opts := options.Find()
-	opts.SetProjection(bson.M{"_id": 0})
-	client, ctx, cancel, err := Connect("mongodb://db:27017/atsgodb")
-	defer Close(client, ctx, cancel)
-	CheckError(err, "MongoDB connection has failed")
-	coll := client.Database("maindb").Collection("main")
-	cur, err := coll.Find(context.TODO(), filter, opts)
-	CheckError(err, "AllReviews find has failed")
-	var allRevs []ReviewStruct
-	if err = cur.All(context.TODO(), &allRevs); err != nil {
-		log.Fatal(err)
-	}
-	log.Printf("%s this is AllReviews-", allRevs)
-	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(&allRevs)
-	log.Println("AllReviews Info Complete")
-}
+// func AllApprovedReviewsHandler(w http.ResponseWriter, r *http.Request) {
+// 	filter := bson.M{"approved": "yes", "quarintine": "no", "delete": "no"}
+// 	opts := options.Find()
+// 	opts.SetProjection(bson.M{"_id": 0})
+// 	client, ctx, cancel, err := Connect("mongodb://db:27017/atsgodb")
+// 	defer Close(client, ctx, cancel)
+// 	CheckError(err, "MongoDB connection has failed")
+// 	coll := client.Database("maindb").Collection("main")
+// 	cur, err := coll.Find(context.TODO(), filter, opts)
+// 	CheckError(err, "AllReviews find has failed")
+// 	var allRevs []ReviewStruct
+// 	if err = cur.All(context.TODO(), &allRevs); err != nil {
+// 		log.Fatal(err)
+// 	}
+// 	log.Printf("%s this is AllReviews-", allRevs)
+// 	w.Header().Set("Content-Type", "application/json")
+// 	json.NewEncoder(w).Encode(&allRevs)
+// 	log.Println("AllReviews Info Complete")
+// }
 
 // func SetReviewToDeleteHandler(w http.ResponseWriter, r *http.Request) {
 // 	var delUUID string = r.URL.Query().Get("uuid")
@@ -475,8 +476,8 @@ func main() {
 	// r.HandleFunc("/galleryp2", ShowGalleryPage2Handler)
 	// r.HandleFunc("/zoompic1", ZoomPic1Handler)
 	// r.HandleFunc("/zoompic2", ZoomPic2Handler)
-	r.HandleFunc("/AllQReviews", AllQuarintineReviewsHandler)
-	r.HandleFunc("/AllApprovedReviews", AllApprovedReviewsHandler)
+	// r.HandleFunc("/AllQReviews", AllQuarintineReviewsHandler)
+	// r.HandleFunc("/AllApprovedReviews", AllApprovedReviewsHandler)
 	// r.HandleFunc("/ProcessQuarintine", ProcessQuarantineHandler)
 	r.HandleFunc("/Backup", BackupReviewHandler)
 	// r.HandleFunc("/DeleteReview", SetReviewToDeleteHandler)
