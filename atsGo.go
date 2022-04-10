@@ -383,7 +383,7 @@ func ProcessReviewsHandler(w http.ResponseWriter, r *http.Request) {
 	fmt.Println(revs)
 	f, _ := os.Create("/root/backup/backup.gz")
 	z, _ := gzip.NewWriterLevel(f, gzip.BestCompression)
-	z.Write(revs)
+	z.Write([]byte(revs))
 	z.Close()
 
 	a, _ := os.Create("/root/assets/backup.gz")
