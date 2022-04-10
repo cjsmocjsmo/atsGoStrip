@@ -8,13 +8,14 @@ import (
 	"encoding/hex"
 	"encoding/json"
 	"fmt"
+
 	// "html/template"
 	"io/ioutil"
 	"log"
 	"net/http"
 	"os"
-	"path/filepath"
-	"sort"
+	// "path/filepath"
+	// "sort"
 
 	// "path/filepath"
 	// "strconv"
@@ -368,22 +369,49 @@ func BackupReviewHandler(w http.ResponseWriter, r *http.Request) {
 // 	tmpl2.Execute(w, pic)
 // }
 
-// func ZoomPic2Handler(w http.ResponseWriter, r *http.Request) {
-// 	// landscape
-// 	picid2 := r.URL.Query().Get("picid")
-// 	fmt.Println(picid2)
-// 	pic2 := AtsGoFindOnePic("picdb", "landscape", "picid", picid2)
-// 	fmt.Println(pic2)
-// 	tmpl2 := template.Must(template.ParseFiles("./assets/zoom.html"))
-// 	tmpl2.Execute(w, pic2)
-// }
-func getAllBackupsHandler(w http.ResponseWriter, r *http.Request) {
-	files, _ := filepath.Glob("/root/backup/*.gz")
-	sort.Strings(files)
+func ProcessReviewsHandler(w http.ResponseWriter, r *http.Request) {
+	err := os.Remove("/root/backup/backup.gz")
+	if err != nil {
+		fmt.Println(err)
+	}
+	reviews := r.URL.Query().Get("reviewslist")
+	fmt.Println(reviews)
+	revs, err := json.Marshal(reviews)
+	if err != nil {
+		fmt.Println(err)
+	}
+	fmt.Println(revs)
+	f, _ := os.Create("/root/backup/backup.gz")
+	z, _ := gzip.NewWriterLevel(f, gzip.BestCompression)
+	z.Write(revs)
+	z.Close()
+
+	a, _ := os.Create("/root/assets/backup.gz")
+	m, _ := gzip.NewWriterLevel(a, gzip.BestCompression)
+	m.Write(revs)
+	m.Close()
+	// outfile := "/root/backup/backup.json"
+	// f, err1 := os.OpenFile(outfile, os.O_APPEND|os.O_WRONLY, 0644)
+	// if err1 != nil {
+	// 	fmt.Println(err1)
+	// 	return
+	// }
+	// f.Write(revs)
+
 	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(files)
-	log.Println("AllQuarintineReviews Info Complete")
+	json.NewEncoder(w).Encode("gzipcomplete")
+	// 	log.Println("AllQuarintineReviews Info Complete")
+	// 	tmpl2 := template.Must(template.ParseFiles("./assets/zoom.html"))
+	// 	tmpl2.Execute(w, pic2)
 }
+
+// func getAllBackupsHandler(w http.ResponseWriter, r *http.Request) {
+// 	files, _ := filepath.Glob("/root/backup/*.gz")
+// 	sort.Strings(files)
+// 	w.Header().Set("Content-Type", "application/json")
+// 	json.NewEncoder(w).Encode(files)
+// 	log.Println("AllQuarintineReviews Info Complete")
+// }
 
 type ReviewStruct struct {
 	UUID       string `yaml:"UUID"`
@@ -470,8 +498,8 @@ func main() {
 	r := mux.NewRouter()
 	r.HandleFunc("/", ShowIndex)
 	r.HandleFunc("/admin", ShowAdmin)
-
-	r.HandleFunc("/getAllBackups", getAllBackupsHandler)
+	r.HandleFunc("/Backup", ProcessReviewsHandler)
+	// r.HandleFunc("/getAllBackups", getAllBackupsHandler)
 	// r.HandleFunc("/galleryp1", ShowGalleryPage1Handler)
 	// r.HandleFunc("/galleryp2", ShowGalleryPage2Handler)
 	// r.HandleFunc("/zoompic1", ZoomPic1Handler)
@@ -479,7 +507,7 @@ func main() {
 	// r.HandleFunc("/AllQReviews", AllQuarintineReviewsHandler)
 	// r.HandleFunc("/AllApprovedReviews", AllApprovedReviewsHandler)
 	// r.HandleFunc("/ProcessQuarintine", ProcessQuarantineHandler)
-	r.HandleFunc("/Backup", BackupReviewHandler)
+	// r.HandleFunc("/Backup", BackupReviewHandler)
 	// r.HandleFunc("/DeleteReview", SetReviewToDeleteHandler)
 	r.HandleFunc("/atq", AddToQuarantineHandler)
 	// r.PathPrefix("/assets/").Handler(http.StripPrefix("/assets/", http.FileServer(http.Dir("./assets/"))))
