@@ -10,7 +10,7 @@ services:
       - 27017:27017
 
   atsGo:
-    image: atsgo:1.4.0
+    image: atsgo:1.4.1
     build: .
     environment:
       - ATSGO_SERVER_ADDR=http://alphatree.services
