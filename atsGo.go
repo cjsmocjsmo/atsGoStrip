@@ -1,7 +1,7 @@
 package main
 
 import (
-	"bufio"
+	// "bufio"
 	"compress/gzip"
 	"context"
 	"crypto/rand"
@@ -253,18 +253,18 @@ func WriteJsonFile(alist string) {
 	return
 }
 
-func WriteGzipFile() {
-	outfile_json := os.Getenv("ATSGO_JSON_PATH")
-	ofj, _ := os.Open(outfile_json)
-	reader := bufio.NewReader(ofj)
-	content, _ := ioutil.ReadAll(reader)
+func WriteGzipFile(alist string) {
+	// outfile_json := os.Getenv("ATSGO_JSON_PATH")
+	// ofj, _ := os.Open(outfile_json)
+	// reader := bufio.NewReader(ofj)
+	// content, _ := ioutil.ReadAll(reader)
 
 	outfile_gzip := os.Getenv("ATSGO_GZIP_PATH")
 	f, _ := os.Create(outfile_gzip)
 	z, _ := gzip.NewWriterLevel(f, gzip.BestCompression)
-	z.Write([]byte(content))
+	z.Write([]byte(alist))
 	z.Close()
-	ofj.Close()
+	// ofj.Close()
 	// ofgz, _ := os.Open(outfile_gzip)
 	// ofgz.Write(content)
 	// ofgz.Close()
@@ -277,7 +277,7 @@ func ProcessReviewsHandler(w http.ResponseWriter, r *http.Request) {
 
 	reviews := r.URL.Query().Get("reviewslist")
 	WriteJsonFile(reviews)
-	WriteGzipFile()
+	WriteGzipFile(reviews)
 
 	log.Println(reviews)
 	fmt.Println(reviews)
