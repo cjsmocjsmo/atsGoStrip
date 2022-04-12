@@ -2,7 +2,7 @@ package main
 
 import (
 	"bufio"
-	// "compress/gzip"
+	"compress/gzip"
 	"context"
 	"crypto/rand"
 	"encoding/hex"
@@ -260,10 +260,15 @@ func WriteGzipFile() {
 	content, _ := ioutil.ReadAll(reader)
 
 	outfile_gzip := os.Getenv("ATSGO_GZIP_PATH")
-	ofgz, _ := os.Open(outfile_gzip)
-	ofgz.Write(content)
-	ofgz.Close()
+	f, _ := os.Create(outfile_gzip)
+	z, _ := gzip.NewWriterLevel(f, gzip.BestCompression)
+	z.Write([]byte(content))
+	z.Close()
 	ofj.Close()
+	// ofgz, _ := os.Open(outfile_gzip)
+	// ofgz.Write(content)
+	// ofgz.Close()
+
 	return
 }
 
