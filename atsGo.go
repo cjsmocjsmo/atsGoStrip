@@ -268,7 +268,7 @@ func WriteGzipFile() {
 }
 
 func ProcessReviewsHandler(w http.ResponseWriter, r *http.Request) {
-	RemoveBackups()
+	// RemoveBackups()
 
 	reviews := r.URL.Query().Get("reviewslist")
 	WriteJsonFile(reviews)
