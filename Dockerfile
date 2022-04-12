@@ -46,6 +46,8 @@ COPY backup/*.gz ./backup/
 COPY assets/*.html ./assets/
 COPY assets/*.yaml ./assets/
 COPY assets/*js ./assets/
+COPY assets/*.gz ./assets/
+
 # COPY assets/*css ./assets/
 # COPY assets/images/*webp ./assets/images/
 # COPY assets/images/*jpg ./assets/images/

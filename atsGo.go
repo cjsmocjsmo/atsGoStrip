@@ -256,15 +256,14 @@ func WriteJsonFile(alist string) {
 func WriteGzipFile() {
 	outfile_json := os.Getenv("ATSGO_JSON_PATH")
 	ofj, _ := os.Open(outfile_json)
-
 	reader := bufio.NewReader(ofj)
 	content, _ := ioutil.ReadAll(reader)
-	ofj.Close()
 
 	outfile_gzip := os.Getenv("ATSGO_GZIP_PATH")
 	ofgz, _ := os.Open(outfile_gzip)
 	ofgz.Write(content)
 	ofgz.Close()
+	ofj.Close()
 	return
 }
 
