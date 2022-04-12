@@ -259,10 +259,15 @@ func WriteGzipFile(alist string) {
 	// reader := bufio.NewReader(ofj)
 	// content, _ := ioutil.ReadAll(reader)
 
+	var revs string
+	err := json.Unmarshal([]byte(alist), &revs)
+	if err != nil {
+		fmt.Println(err)
+	}
 	outfile_gzip := os.Getenv("ATSGO_GZIP_PATH")
 	f, _ := os.Create(outfile_gzip)
 	z, _ := gzip.NewWriterLevel(f, gzip.BestCompression)
-	z.Write([]byte(alist))
+	z.Write([]byte(revs))
 	z.Close()
 	// ofj.Close()
 	// ofgz, _ := os.Open(outfile_gzip)
