@@ -1,8 +1,8 @@
 package main
 
 import (
-	// "bufio"
-	"compress/gzip"
+	"bufio"
+	// "compress/gzip"
 	"context"
 	"crypto/rand"
 	"encoding/hex"
@@ -14,6 +14,7 @@ import (
 	"log"
 	"net/http"
 	"os"
+
 	// "path/filepath"
 	// "sort"
 
@@ -24,9 +25,9 @@ import (
 
 	"github.com/gorilla/handlers"
 	"github.com/gorilla/mux"
-	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
+	// "go.mongodborg/mongo-driver/bson"
 
 	// "gopkg.in/gomail.v2"
 	"gopkg.in/yaml.v2"
@@ -166,6 +167,290 @@ func AddToQuarantineHandler(w http.ResponseWriter, r *http.Request) {
 	// }
 }
 
+// func AllApprovedReviews() bool {
+// 	result := false
+// 	filter := bson.M{"approved": "yes", "quarintine": "no", "delete": "no"}
+// 	opts := options.Find()
+// 	opts.SetProjection(bson.M{"_id": 0})
+// 	client, ctx, cancel, err := Connect("mongodb://db:27017/atsgodb")
+// 	defer Close(client, ctx, cancel)
+// 	CheckError(err, "MongoDB connection has failed")
+// 	coll := client.Database("maindb").Collection("main")
+// 	cur, err := coll.Find(context.TODO(), filter, opts)
+// 	CheckError(err, "AllReviews find has failed")
+// 	var allRevs []ReviewStruct
+// 	if err = cur.All(context.TODO(), &allRevs); err != nil {
+// 		return result
+// 	}
+// 	if len(allRevs) != 0 {
+// 		result = true
+// 	}
+// 	log.Println("AllReviews Info Complete")
+// 	return result
+
+// }
+
+// func BackupReviewHandler(w http.ResponseWriter, r *http.Request) {
+// 	filter := bson.M{}
+// 	opts := options.Find()
+// 	opts.SetProjection(bson.M{"_id": 0})
+// 	client, ctx, cancel, err := Connect("mongodb://db:27017/atsgodb")
+// 	defer Close(client, ctx, cancel)
+// 	CheckError(err, "MongoDB connection has failed")
+// 	coll := client.Database("maindb").Collection("main")
+// 	cur, err := coll.Find(context.TODO(), filter, opts)
+// 	CheckError(err, "AllReviews find has failed")
+// 	var allRevs []ReviewStruct
+// 	if err = cur.All(context.TODO(), &allRevs); err != nil {
+// 		log.Fatal(err)
+// 	}
+// 	bString, _ := json.Marshal(allRevs)
+
+// 	err = ioutil.WriteFile("/root/backup/backup.json", bString, 0644)
+// 	if err != nil {
+// 		log.Fatal(err)
+// 	}
+
+// 	bStringBytes := []byte(bString)
+// 	t := time.Now().Format(time.RFC3339)
+// 	new_file_name := "/root/backup/" + t + "_backup.gz"
+// 	newFile, _ := os.Create(new_file_name)
+// 	ww := gzip.NewWriter(newFile)
+// 	ww.Write(bStringBytes)
+// 	ww.Close()
+
+// 	fmt.Println("this is new_file_name")
+// 	fmt.Println(new_file_name)
+// 	// m := gomail.NewMessage()
+// 	// m.SetHeader("From", "porthose.cjsmo.cjsmo@gmail.com")
+// 	// m.SetHeader("To", "porthose.cjsmo.cjsmo@gmail.com", "Alpha.treeservicecdm@gmail.com")
+// 	// m.SetHeader("Subject: AlphaTreeService Reviews Backup")
+// 	// m.SetBody("text/html", s)
+// 	// m.Attach("/root/backup/" + name_of_file)
+// 	// d := gomail.NewDialer("smtp.gmail.com", 587, "porthose.cjsmo.cjsmo@gmail.com", "!Porthose1960")
+// 	// if err := d.DialAndSend(m); err != nil {
+// 	// 	panic(err)
+// 	// }
+// }
+
+func RemoveBackups() {
+	err := os.Remove("/root/backup/backup.gz")
+	if err != nil {
+		fmt.Println(err)
+	}
+	err = os.Remove("/root/assets/backup.gz")
+	if err != nil {
+		fmt.Println(err)
+	}
+	return
+}
+
+func WriteJsonFile(alist string) {
+	outfile_json := os.Getenv("ATSGO_JSON_PATH")
+	f, _ := os.Open(outfile_json)
+	f.Write([]byte(alist))
+	f.Close()
+	return
+}
+
+func WriteGzipFile() {
+	outfile_json := os.Getenv("ATSGO_JSON_PATH")
+	ofj, _ := os.Open(outfile_json)
+
+	reader := bufio.NewReader(ofj)
+	content, _ := ioutil.ReadAll(reader)
+	ofj.Close()
+
+	outfile_gzip := os.Getenv("ATSGO_GZIP_PATH")
+	ofgz, _ := os.Open(outfile_gzip)
+	ofgz.Write(content)
+	ofgz.Close()
+	return
+}
+
+func ProcessReviewsHandler(w http.ResponseWriter, r *http.Request) {
+	RemoveBackups()
+
+	reviews := r.URL.Query().Get("reviewslist")
+	WriteJsonFile(reviews)
+	WriteGzipFile()
+
+	log.Println(reviews)
+	fmt.Println(reviews)
+
+	// revs, err := json.Marshal(reviews)
+	// if err != nil {
+	// 	log.Println(err)
+	// }
+
+	// f, _ := os.Create("/root/backup/backup.gz")
+	// z, _ := gzip.NewWriterLevel(f, gzip.BestCompression)
+	// z.Write([]byte(reviews))
+	// z.Close()
+
+	// a, _ := os.Create("/root/assets/backup.gz")
+	// m, _ := gzip.NewWriterLevel(a, gzip.BestCompression)
+	// m.Write([]byte(reviews))
+	// m.Close()
+	// log.Println("finishered")
+	// outfile := "/root/backup/backup.json"
+	// f, err1 := os.OpenFile(outfile, os.O_APPEND|os.O_WRONLY, 0644)
+	// if err1 != nil {
+	// 	fmt.Println(err1)
+	// 	return
+	// }
+	// f.Write(revs)
+
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode("GZIPISCOMPLETENOW")
+	// 	log.Println("AllQuarintineReviews Info Complete")
+	// 	tmpl2 := template.Must(template.ParseFiles("./assets/zoom.html"))
+	// 	tmpl2.Execute(w, pic2)
+}
+
+// func getAllBackupsHandler(w http.ResponseWriter, r *http.Request) {
+// 	files, _ := filepath.Glob("/root/backup/*.gz")
+// 	sort.Strings(files)
+// 	w.Header().Set("Content-Type", "application/json")
+// 	json.NewEncoder(w).Encode(files)
+// 	log.Println("AllQuarintineReviews Info Complete")
+// }
+
+type ReviewStruct struct {
+	UUID       string `yaml:"UUID"`
+	Date       string `yaml:"Date"`
+	Name       string `yaml:"Name"`
+	Email      string `yaml:"Email"`
+	Sig        string `yaml:"Sig"`
+	Message    string `yaml:"Message"`
+	Approved   string `yaml:"Approved"`
+	Quarintine string `yaml:"Quarintine"`
+	Delete     string `yaml:"Delete"`
+}
+
+func (c *ReviewStruct) Parse(data []byte) error {
+	return yaml.Unmarshal(data, c)
+}
+
+// type PicStruct struct {
+// 	PicID  string `bson:"picid"`
+// 	Pic    string `bson:"pic"`
+// 	Thumb  string `bson:"thumb"`
+// 	Page   string `bson:"page"`
+// 	Orient bool   `bson:"orient"`
+// }
+func RemoveLogFile(logtxtfile string) bool {
+	// var logtxtfile string = os.Getenv("AMPGO_SERVER_LOG_PATH")
+	var result bool
+	_, err := os.Stat(logtxtfile)
+	if err == nil {
+		log.Printf("logfile %s exists removing", logtxtfile)
+		os.Remove(logtxtfile)
+		result = true
+	} else if os.IsNotExist(err) {
+		log.Printf("logfile %s does not exists", logtxtfile)
+		result = true
+	} else {
+		log.Printf("logfile %s stat error: %v", logtxtfile, err)
+		result = false
+	}
+	return result
+}
+
+func StartServerLogging() string {
+	var logtxtfile string = os.Getenv("ATSGO_SERVER_LOG_PATH")
+	result := RemoveLogFile(logtxtfile)
+	if result {
+		file, err := os.OpenFile(logtxtfile, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0666)
+		if err != nil {
+			fmt.Println(err)
+		}
+		log.SetOutput(file)
+	} else {
+		fmt.Println("Unable to setup logging")
+	}
+	return "Logging started"
+}
+
+func init() {
+	// if AllApprovedReviews() {
+	// 	fmt.Println("Db present do nothing")
+	// } else {
+
+	data, err := ioutil.ReadFile("./assets/review1.yaml")
+	if err != nil {
+		log.Fatal(err)
+	}
+	var rev1 ReviewStruct
+	if err := rev1.Parse(data); err != nil {
+		log.Fatal(err)
+	}
+	fmt.Println(rev1)
+	AlphaT_Insert("maindb", "main", rev1)
+	os.Remove("./assets/review1.yaml")
+
+	data2, err := ioutil.ReadFile("./assets/review2.yaml")
+	if err != nil {
+		log.Fatal(err)
+	}
+	var rev2 ReviewStruct
+	if err := rev2.Parse(data2); err != nil {
+		log.Fatal(err)
+	}
+	fmt.Println(rev2)
+	AlphaT_Insert("maindb", "main", rev2)
+	os.Remove("./assets/review2.yaml")
+
+	data3, err := ioutil.ReadFile("./assets/fake1.yaml")
+	if err != nil {
+		log.Fatal(err)
+	}
+	var rev3 ReviewStruct
+	if err := rev3.Parse(data3); err != nil {
+		log.Fatal(err)
+	}
+	fmt.Println(rev3)
+	AlphaT_Insert("maindb", "main", rev3)
+	os.Remove("./assets/fake1.yaml")
+
+	data4, err := ioutil.ReadFile("./assets/fake2.yaml")
+	if err != nil {
+		log.Fatal(err)
+	}
+	var rev4 ReviewStruct
+	if err := rev4.Parse(data4); err != nil {
+		log.Fatal(err)
+	}
+	fmt.Println(rev4)
+	AlphaT_Insert("maindb", "main", rev4)
+	os.Remove("./assets/fake2.yaml")
+
+	// os.Remove("/root/backup/backup.gz")
+	// }
+}
+
+func main() {
+	// StartServerLogging()
+	r := mux.NewRouter()
+	r.HandleFunc("/", ShowIndex)
+	r.HandleFunc("/admin", ShowAdmin)
+	r.HandleFunc("/Backup", ProcessReviewsHandler)
+
+	// r.HandleFunc("/atq", AddToQuarantineHandler)
+	// r.PathPrefix("/static/").Handler(http.StripPrefix("/static/", http.FileServer(http.Dir("./static/"))))
+	r.PathPrefix("/assets/").Handler(http.StripPrefix("/assets/", http.FileServer(http.Dir("./assets/"))))
+
+	http.ListenAndServe(":80", handlers.CORS(handlers.AllowedHeaders([]string{"X-Requested-With", "Content-Type", "Authorization"}),
+		handlers.AllowedMethods([]string{"GET", "POST", "PUT", "HEAD", "OPTIONS"}),
+		handlers.AllowedOrigins([]string{"*"}))(r))
+
+	// http.ListenAndServeTLS(":80", "/root/atsio.crt", "/root/atsio.key",
+	// 	handlers.CORS(handlers.AllowedHeaders([]string{"X-Requested-With", "Content-Type", "Authorization"}),
+	// 		handlers.AllowedMethods([]string{"GET", "POST", "PUT", "HEAD", "OPTIONS"}),
+	// 		handlers.AllowedOrigins([]string{"*"}))(r))
+
+}
+
 // func AllQuarintineReviewsHandler(w http.ResponseWriter, r *http.Request) {
 // 	filter := bson.M{"approved": "no", "quarintine": "yes", "delete": "no"}
 // 	opts := options.Find()
@@ -184,129 +469,6 @@ func AddToQuarantineHandler(w http.ResponseWriter, r *http.Request) {
 // 	w.Header().Set("Content-Type", "application/json")
 // 	json.NewEncoder(w).Encode(&allQRevs)
 // }
-
-func AllApprovedReviews() bool {
-	result := false
-	filter := bson.M{"approved": "yes", "quarintine": "no", "delete": "no"}
-	opts := options.Find()
-	opts.SetProjection(bson.M{"_id": 0})
-	client, ctx, cancel, err := Connect("mongodb://db:27017/atsgodb")
-	defer Close(client, ctx, cancel)
-	CheckError(err, "MongoDB connection has failed")
-	coll := client.Database("maindb").Collection("main")
-	cur, err := coll.Find(context.TODO(), filter, opts)
-	CheckError(err, "AllReviews find has failed")
-	var allRevs []ReviewStruct
-	if err = cur.All(context.TODO(), &allRevs); err != nil {
-		return result
-	}
-	if len(allRevs) != 0 {
-		result = true
-	}
-	log.Println("AllReviews Info Complete")
-	return result
-
-}
-
-// func AllApprovedReviewsHandler(w http.ResponseWriter, r *http.Request) {
-// 	filter := bson.M{"approved": "yes", "quarintine": "no", "delete": "no"}
-// 	opts := options.Find()
-// 	opts.SetProjection(bson.M{"_id": 0})
-// 	client, ctx, cancel, err := Connect("mongodb://db:27017/atsgodb")
-// 	defer Close(client, ctx, cancel)
-// 	CheckError(err, "MongoDB connection has failed")
-// 	coll := client.Database("maindb").Collection("main")
-// 	cur, err := coll.Find(context.TODO(), filter, opts)
-// 	CheckError(err, "AllReviews find has failed")
-// 	var allRevs []ReviewStruct
-// 	if err = cur.All(context.TODO(), &allRevs); err != nil {
-// 		log.Fatal(err)
-// 	}
-// 	log.Printf("%s this is AllReviews-", allRevs)
-// 	w.Header().Set("Content-Type", "application/json")
-// 	json.NewEncoder(w).Encode(&allRevs)
-// 	log.Println("AllReviews Info Complete")
-// }
-
-// func SetReviewToDeleteHandler(w http.ResponseWriter, r *http.Request) {
-// 	var delUUID string = r.URL.Query().Get("uuid")
-// 	filter := bson.M{"uuid": delUUID}
-// 	update := bson.M{"$set": bson.M{"delete": "yes"}}
-// 	client, ctx, cancel, err := Connect("mongodb://db:27017/atsgodb")
-// 	defer Close(client, ctx, cancel)
-// 	CheckError(err, "MongoDB connection has failed")
-// 	UpdateOne(client, ctx, filter, "maindb", "main", update)
-// }
-
-// func ProcessQuarantineHandler(w http.ResponseWriter, r *http.Request) {
-// 	filter := bson.M{}
-// 	opts := options.Find()
-// 	opts.SetProjection(bson.M{"_id": 0})
-// 	client, ctx, cancel, err := Connect("mongodb://db:27017/atsgodb")
-// 	defer Close(client, ctx, cancel)
-// 	CheckError(err, "MongoDB connection has failed")
-// 	coll := client.Database("maindb").Collection("main")
-// 	cur, err := coll.Find(context.TODO(), filter, opts)
-// 	CheckError(err, "AllQuarintineReviews find has failed")
-// 	var allRevs []ReviewStruct
-// 	if err = cur.All(context.TODO(), &allRevs); err != nil {
-// 		log.Fatal(err)
-// 	}
-// 	for _, rev := range allRevs {
-// 		filter := bson.M{"uuid": rev.UUID}
-// 		update := bson.M{"$set": bson.M{"approved": "yes", "quarintine": "no"}}
-// 		client, ctx, cancel, err := Connect("mongodb://db:27017/atsgodb")
-// 		defer Close(client, ctx, cancel)
-// 		CheckError(err, "MongoDB connection has failed")
-// 		UpdateOne(client, ctx, filter, "maindb", "main", update)
-// 	}
-// 	w.Header().Set("Content-Type", "application/json")
-// 	json.NewEncoder(w).Encode("Update complete")
-// 	log.Println("AllQuarintineReviews Info Complete")
-// }
-
-func BackupReviewHandler(w http.ResponseWriter, r *http.Request) {
-	filter := bson.M{}
-	opts := options.Find()
-	opts.SetProjection(bson.M{"_id": 0})
-	client, ctx, cancel, err := Connect("mongodb://db:27017/atsgodb")
-	defer Close(client, ctx, cancel)
-	CheckError(err, "MongoDB connection has failed")
-	coll := client.Database("maindb").Collection("main")
-	cur, err := coll.Find(context.TODO(), filter, opts)
-	CheckError(err, "AllReviews find has failed")
-	var allRevs []ReviewStruct
-	if err = cur.All(context.TODO(), &allRevs); err != nil {
-		log.Fatal(err)
-	}
-	bString, _ := json.Marshal(allRevs)
-
-	err = ioutil.WriteFile("/root/backup/backup.json", bString, 0644)
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	bStringBytes := []byte(bString)
-	t := time.Now().Format(time.RFC3339)
-	new_file_name := "/root/backup/" + t + "_backup.gz"
-	newFile, _ := os.Create(new_file_name)
-	ww := gzip.NewWriter(newFile)
-	ww.Write(bStringBytes)
-	ww.Close()
-
-	fmt.Println("this is new_file_name")
-	fmt.Println(new_file_name)
-	// m := gomail.NewMessage()
-	// m.SetHeader("From", "porthose.cjsmo.cjsmo@gmail.com")
-	// m.SetHeader("To", "porthose.cjsmo.cjsmo@gmail.com", "Alpha.treeservicecdm@gmail.com")
-	// m.SetHeader("Subject: AlphaTreeService Reviews Backup")
-	// m.SetBody("text/html", s)
-	// m.Attach("/root/backup/" + name_of_file)
-	// d := gomail.NewDialer("smtp.gmail.com", 587, "porthose.cjsmo.cjsmo@gmail.com", "!Porthose1960")
-	// if err := d.DialAndSend(m); err != nil {
-	// 	panic(err)
-	// }
-}
 
 // func ShowGalleryPage1Handler(w http.ResponseWriter, r *http.Request) {
 // 	filter := bson.M{"page": "1"}
@@ -369,157 +531,59 @@ func BackupReviewHandler(w http.ResponseWriter, r *http.Request) {
 // 	tmpl2.Execute(w, pic)
 // }
 
-func ProcessReviewsHandler(w http.ResponseWriter, r *http.Request) {
-	err := os.Remove("/root/backup/backup.gz")
-	if err != nil {
-		fmt.Println(err)
-	}
-	reviews := r.URL.Query().Get("reviewslist")
-	fmt.Println(reviews)
-	revs, err := json.Marshal(reviews)
-	if err != nil {
-		fmt.Println(err)
-	}
-	fmt.Println(revs)
-	f, _ := os.Create("/root/backup/backup.gz")
-	z, _ := gzip.NewWriterLevel(f, gzip.BestCompression)
-	z.Write([]byte(revs))
-	z.Close()
-
-	a, _ := os.Create("/root/assets/backup.gz")
-	m, _ := gzip.NewWriterLevel(a, gzip.BestCompression)
-	m.Write(revs)
-	m.Close()
-	// outfile := "/root/backup/backup.json"
-	// f, err1 := os.OpenFile(outfile, os.O_APPEND|os.O_WRONLY, 0644)
-	// if err1 != nil {
-	// 	fmt.Println(err1)
-	// 	return
-	// }
-	// f.Write(revs)
-
-	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode("gzipcomplete")
-	// 	log.Println("AllQuarintineReviews Info Complete")
-	// 	tmpl2 := template.Must(template.ParseFiles("./assets/zoom.html"))
-	// 	tmpl2.Execute(w, pic2)
-}
-
-// func getAllBackupsHandler(w http.ResponseWriter, r *http.Request) {
-// 	files, _ := filepath.Glob("/root/backup/*.gz")
-// 	sort.Strings(files)
+// func AllApprovedReviewsHandler(w http.ResponseWriter, r *http.Request) {
+// 	filter := bson.M{"approved": "yes", "quarintine": "no", "delete": "no"}
+// 	opts := options.Find()
+// 	opts.SetProjection(bson.M{"_id": 0})
+// 	client, ctx, cancel, err := Connect("mongodb://db:27017/atsgodb")
+// 	defer Close(client, ctx, cancel)
+// 	CheckError(err, "MongoDB connection has failed")
+// 	coll := client.Database("maindb").Collection("main")
+// 	cur, err := coll.Find(context.TODO(), filter, opts)
+// 	CheckError(err, "AllReviews find has failed")
+// 	var allRevs []ReviewStruct
+// 	if err = cur.All(context.TODO(), &allRevs); err != nil {
+// 		log.Fatal(err)
+// 	}
+// 	log.Printf("%s this is AllReviews-", allRevs)
 // 	w.Header().Set("Content-Type", "application/json")
-// 	json.NewEncoder(w).Encode(files)
+// 	json.NewEncoder(w).Encode(&allRevs)
+// 	log.Println("AllReviews Info Complete")
+// }
+
+// func SetReviewToDeleteHandler(w http.ResponseWriter, r *http.Request) {
+// 	var delUUID string = r.URL.Query().Get("uuid")
+// 	filter := bson.M{"uuid": delUUID}
+// 	update := bson.M{"$set": bson.M{"delete": "yes"}}
+// 	client, ctx, cancel, err := Connect("mongodb://db:27017/atsgodb")
+// 	defer Close(client, ctx, cancel)
+// 	CheckError(err, "MongoDB connection has failed")
+// 	UpdateOne(client, ctx, filter, "maindb", "main", update)
+// }
+
+// func ProcessQuarantineHandler(w http.ResponseWriter, r *http.Request) {
+// 	filter := bson.M{}
+// 	opts := options.Find()
+// 	opts.SetProjection(bson.M{"_id": 0})
+// 	client, ctx, cancel, err := Connect("mongodb://db:27017/atsgodb")
+// 	defer Close(client, ctx, cancel)
+// 	CheckError(err, "MongoDB connection has failed")
+// 	coll := client.Database("maindb").Collection("main")
+// 	cur, err := coll.Find(context.TODO(), filter, opts)
+// 	CheckError(err, "AllQuarintineReviews find has failed")
+// 	var allRevs []ReviewStruct
+// 	if err = cur.All(context.TODO(), &allRevs); err != nil {
+// 		log.Fatal(err)
+// 	}
+// 	for _, rev := range allRevs {
+// 		filter := bson.M{"uuid": rev.UUID}
+// 		update := bson.M{"$set": bson.M{"approved": "yes", "quarintine": "no"}}
+// 		client, ctx, cancel, err := Connect("mongodb://db:27017/atsgodb")
+// 		defer Close(client, ctx, cancel)
+// 		CheckError(err, "MongoDB connection has failed")
+// 		UpdateOne(client, ctx, filter, "maindb", "main", update)
+// 	}
+// 	w.Header().Set("Content-Type", "application/json")
+// 	json.NewEncoder(w).Encode("Update complete")
 // 	log.Println("AllQuarintineReviews Info Complete")
 // }
-
-type ReviewStruct struct {
-	UUID       string `yaml:"UUID"`
-	Date       string `yaml:"Date"`
-	Name       string `yaml:"Name"`
-	Email      string `yaml:"Email"`
-	Sig        string `yaml:"Sig"`
-	Message    string `yaml:"Message"`
-	Approved   string `yaml:"Approved"`
-	Quarintine string `yaml:"Quarintine"`
-	Delete     string `yaml:"Delete"`
-}
-
-func (c *ReviewStruct) Parse(data []byte) error {
-	return yaml.Unmarshal(data, c)
-}
-
-// type PicStruct struct {
-// 	PicID  string `bson:"picid"`
-// 	Pic    string `bson:"pic"`
-// 	Thumb  string `bson:"thumb"`
-// 	Page   string `bson:"page"`
-// 	Orient bool   `bson:"orient"`
-// }
-
-func init() {
-	if AllApprovedReviews() {
-		fmt.Println("Db present do nothing")
-	} else {
-
-		data, err := ioutil.ReadFile("./assets/review1.yaml")
-		if err != nil {
-			log.Fatal(err)
-		}
-		var rev1 ReviewStruct
-		if err := rev1.Parse(data); err != nil {
-			log.Fatal(err)
-		}
-		fmt.Println(rev1)
-		AlphaT_Insert("maindb", "main", rev1)
-		os.Remove("./assets/review1.yaml")
-
-		data2, err := ioutil.ReadFile("./assets/review2.yaml")
-		if err != nil {
-			log.Fatal(err)
-		}
-		var rev2 ReviewStruct
-		if err := rev2.Parse(data2); err != nil {
-			log.Fatal(err)
-		}
-		fmt.Println(rev2)
-		AlphaT_Insert("maindb", "main", rev2)
-		os.Remove("./assets/review2.yaml")
-
-		data3, err := ioutil.ReadFile("./assets/fake1.yaml")
-		if err != nil {
-			log.Fatal(err)
-		}
-		var rev3 ReviewStruct
-		if err := rev3.Parse(data3); err != nil {
-			log.Fatal(err)
-		}
-		fmt.Println(rev3)
-		AlphaT_Insert("maindb", "main", rev3)
-		os.Remove("./assets/fake1.yaml")
-
-		data4, err := ioutil.ReadFile("./assets/fake2.yaml")
-		if err != nil {
-			log.Fatal(err)
-		}
-		var rev4 ReviewStruct
-		if err := rev4.Parse(data4); err != nil {
-			log.Fatal(err)
-		}
-		fmt.Println(rev4)
-		AlphaT_Insert("maindb", "main", rev4)
-		os.Remove("./assets/fake2.yaml")
-
-		os.Remove("/root/backup/backup.gz")
-	}
-}
-
-func main() {
-	r := mux.NewRouter()
-	r.HandleFunc("/", ShowIndex)
-	r.HandleFunc("/admin", ShowAdmin)
-	r.HandleFunc("/Backup", ProcessReviewsHandler)
-	// r.HandleFunc("/getAllBackups", getAllBackupsHandler)
-	// r.HandleFunc("/galleryp1", ShowGalleryPage1Handler)
-	// r.HandleFunc("/galleryp2", ShowGalleryPage2Handler)
-	// r.HandleFunc("/zoompic1", ZoomPic1Handler)
-	// r.HandleFunc("/zoompic2", ZoomPic2Handler)
-	// r.HandleFunc("/AllQReviews", AllQuarintineReviewsHandler)
-	// r.HandleFunc("/AllApprovedReviews", AllApprovedReviewsHandler)
-	// r.HandleFunc("/ProcessQuarintine", ProcessQuarantineHandler)
-	// r.HandleFunc("/Backup", BackupReviewHandler)
-	// r.HandleFunc("/DeleteReview", SetReviewToDeleteHandler)
-	r.HandleFunc("/atq", AddToQuarantineHandler)
-	// r.PathPrefix("/assets/").Handler(http.StripPrefix("/assets/", http.FileServer(http.Dir("./assets/"))))
-	r.PathPrefix("/assets/").Handler(http.StripPrefix("/assets/", http.FileServer(http.Dir("./assets/"))))
-
-	http.ListenAndServe(":80", handlers.CORS(handlers.AllowedHeaders([]string{"X-Requested-With", "Content-Type", "Authorization"}),
-		handlers.AllowedMethods([]string{"GET", "POST", "PUT", "HEAD", "OPTIONS"}),
-		handlers.AllowedOrigins([]string{"*"}))(r))
-
-	// http.ListenAndServeTLS(":80", "/root/atsio.crt", "/root/atsio.key",
-	// 	handlers.CORS(handlers.AllowedHeaders([]string{"X-Requested-With", "Content-Type", "Authorization"}),
-	// 		handlers.AllowedMethods([]string{"GET", "POST", "PUT", "HEAD", "OPTIONS"}),
-	// 		handlers.AllowedOrigins([]string{"*"}))(r))
-
-}

@@ -10,16 +10,30 @@ services:
       - 27017:27017
 
   atsGo:
-    image: atsgo:1.4.1
+    image: atsgo:1.4.2.2
     build: .
     environment:
       - ATSGO_SERVER_ADDR=http://alphatree.services
+      - ATSGO_SERVER_LOG_PATH=/root/logs/ampgostrip.txt
+      - ATSGO_JSON_PATH=/root/backup/backup.json
+      - ATSGO_GZIP_PATH=/root/assets/backup.gz
     networks:
       - atsGo
     ports:
       - 80:80
+    volumes:
+      - atsGoVol:/root/logs/
     depends_on:
       - db
       
 networks:
   atsGo:
+
+
+volumes:
+  atsGoVol:
+    driver: local
+    driver_opts:
+      type: none
+      device: /media/charliepi/HD1/AMPGOTEST/
+      o: bind
