@@ -21,19 +21,8 @@ services:
       - atsGo
     ports:
       - 80:80
-    volumes:
-      - atsGoVol:/root/logs/
     depends_on:
       - db
       
 networks:
   atsGo:
-
-
-volumes:
-  atsGoVol:
-    driver: local
-    driver_opts:
-      type: none
-      device: /media/charliepi/HD1/AMPGOTEST/
-      o: bind
