@@ -329,6 +329,11 @@ func ProcessReviewsHandler(w http.ResponseWriter, r *http.Request) {
 // 	log.Println("AllQuarintineReviews Info Complete")
 // }
 
+func TestHandler(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode("THIS IS A TEST IT WORKS")
+}
+
 type ReviewStruct struct {
 	UUID       string `yaml:"UUID"`
 	Date       string `yaml:"Date"`
@@ -448,6 +453,7 @@ func main() {
 	r.HandleFunc("/", ShowIndex)
 	r.HandleFunc("/admin", ShowAdmin)
 	r.HandleFunc("/Backup", ProcessReviewsHandler)
+	r.HandleFunc("/test", TestHandler)
 
 	// r.HandleFunc("/atq", AddToQuarantineHandler)
 	// r.PathPrefix("/static/").Handler(http.StripPrefix("/static/", http.FileServer(http.Dir("./static/"))))
