@@ -2,7 +2,7 @@ package main
 
 import (
 	// "bufio"
-	"compress/gzip"
+	// "compress/gzip"
 	"context"
 	"crypto/rand"
 	"encoding/hex"
@@ -247,42 +247,44 @@ func RemoveBackups() {
 
 func WriteJsonFile(alist string) {
 	outfile_json := os.Getenv("ATSGO_JSON_PATH")
-	f, _ := os.Open(outfile_json)
+	f, _ := os.Create(outfile_json)
 	f.Write([]byte(alist))
 	f.Close()
 	return
 }
 
-func WriteGzipFile(alist string) {
-	// outfile_json := os.Getenv("ATSGO_JSON_PATH")
-	// ofj, _ := os.Open(outfile_json)
-	// reader := bufio.NewReader(ofj)
-	// content, _ := ioutil.ReadAll(reader)
+// func WriteGzipFile(alist string) {
+// 	// outfile_json := os.Getenv("ATSGO_JSON_PATH")
+// 	// ofj, _ := os.Open(outfile_json)
+// 	// reader := bufio.NewReader(ofj)
+// 	// content, _ := ioutil.ReadAll(reader)
+// 	fmt.Println(alist)
+// 	var revs string
+// 	revs, err := json.Marshal([]byte(alist))
+// 	if err != nil {
+// 		fmt.Println(err)
+// 	}
+// 	outfile_gzip := os.Getenv("ATSGO_GZIP_PATH")
+// 	f, _ := os.Create(outfile_gzip)
+// 	z, _ := gzip.NewWriterLevel(f, gzip.BestCompression)
+// 	z.Write([]byte(revs))
+// 	z.Close()
+// 	// ofj.Close()
+// 	// ofgz, _ := os.Open(outfile_gzip)
+// 	// ofgz.Write(content)
+// 	// ofgz.Close()
 
-	var revs string
-	err := json.Unmarshal([]byte(alist), &revs)
-	if err != nil {
-		fmt.Println(err)
-	}
-	outfile_gzip := os.Getenv("ATSGO_GZIP_PATH")
-	f, _ := os.Create(outfile_gzip)
-	z, _ := gzip.NewWriterLevel(f, gzip.BestCompression)
-	z.Write([]byte(revs))
-	z.Close()
-	// ofj.Close()
-	// ofgz, _ := os.Open(outfile_gzip)
-	// ofgz.Write(content)
-	// ofgz.Close()
-
-	return
-}
+// 	return
+// }
 
 func ProcessReviewsHandler(w http.ResponseWriter, r *http.Request) {
 	// RemoveBackups()
 
 	reviews := r.URL.Query().Get("reviewslist")
+	fmt.Printf("%T\n\n", reviews)
+	fmt.Println(reviews)
 	WriteJsonFile(reviews)
-	WriteGzipFile(reviews)
+	// WriteGzipFile(reviews)
 
 	log.Println(reviews)
 	fmt.Println(reviews)
@@ -311,7 +313,7 @@ func ProcessReviewsHandler(w http.ResponseWriter, r *http.Request) {
 	// f.Write(revs)
 
 	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode("GZIPISCOMPLETENOW")
+	json.NewEncoder(w).Encode(reviews)
 	// 	log.Println("AllQuarintineReviews Info Complete")
 	// 	tmpl2 := template.Must(template.ParseFiles("./assets/zoom.html"))
 	// 	tmpl2.Execute(w, pic2)
