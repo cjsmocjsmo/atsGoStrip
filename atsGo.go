@@ -260,14 +260,14 @@ func WriteGzipFile(alist string) {
 	// content, _ := ioutil.ReadAll(reader)
 	fmt.Println(alist)
 	// var revs string
-	revs, err := json.Marshal([]byte(alist))
-	if err != nil {
-		fmt.Println(err)
-	}
+	// revs, err := json.Marshal([]byte(alist))
+	// if err != nil {
+	// 	fmt.Println(err)
+	// }
 	outfile_gzip := os.Getenv("ATSGO_GZIP_PATH")
 	f, _ := os.Create(outfile_gzip)
 	z, _ := gzip.NewWriterLevel(f, gzip.BestCompression)
-	z.Write(revs)
+	z.Write([]byte(alist))
 	z.Close()
 	// 	// ofj.Close()
 	// 	// ofgz, _ := os.Open(outfile_gzip)
