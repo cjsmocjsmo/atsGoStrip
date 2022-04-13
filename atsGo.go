@@ -237,41 +237,6 @@ func ShowAdmin(w http.ResponseWriter, r *http.Request) {
 // 	return
 // }
 
-// func WriteJsonFile(alist string) {
-// 	outfile_json := os.Getenv("ATSGO_JSON_PATH")
-// 	f, _ := os.Create(outfile_json)
-// 	f.Write([]byte(alist))
-// 	f.Close()
-// 	return
-// }
-
-
-
-// type ReviewStruct struct {
-// 	UUID       string `yaml:"UUID"`
-// 	Date       string `yaml:"Date"`
-// 	Name       string `yaml:"Name"`
-// 	Email      string `yaml:"Email"`
-// 	Sig        string `yaml:"Sig"`
-// 	Message    string `yaml:"Message"`
-// 	Approved   string `yaml:"Approved"`
-// 	Quarintine string `yaml:"Quarintine"`
-// 	Delete     string `yaml:"Delete"`
-// }
-
-// func (c *ReviewStruct) Parse(data []byte) error {
-// 	return yaml.Unmarshal(data, c)
-// }
-
-// type PicStruct struct {
-// 	PicID  string `bson:"picid"`
-// 	Pic    string `bson:"pic"`
-// 	Thumb  string `bson:"thumb"`
-// 	Page   string `bson:"page"`
-// 	Orient bool   `bson:"orient"`
-// }
-
-
 // func init() {
 // 	// if AllApprovedReviews() {
 // 	// 	fmt.Println("Db present do nothing")
