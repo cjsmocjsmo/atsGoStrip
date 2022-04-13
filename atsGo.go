@@ -269,10 +269,10 @@ func WriteGzipFile(alist string) {
 	z, _ := gzip.NewWriterLevel(f, gzip.BestCompression)
 	z.Write(revs)
 	z.Close()
-// 	// ofj.Close()
-// 	// ofgz, _ := os.Open(outfile_gzip)
-// 	// ofgz.Write(content)
-// 	// ofgz.Close()
+	// 	// ofj.Close()
+	// 	// ofgz, _ := os.Open(outfile_gzip)
+	// 	// ofgz.Write(content)
+	// 	// ofgz.Close()
 
 	return
 }
@@ -282,12 +282,12 @@ func ProcessReviewsHandler(w http.ResponseWriter, r *http.Request) {
 
 	reviews := r.URL.Query().Get("reviewslist")
 	fmt.Printf("%T\n\n", reviews)
-	fmt.Println(reviews)
+	// fmt.Println(reviews)
 	WriteJsonFile(reviews)
-	// WriteGzipFile(reviews)
+	WriteGzipFile(reviews)
 
-	log.Println(reviews)
-	fmt.Println(reviews)
+	// log.Println(reviews)
+	// fmt.Println(reviews)
 
 	// revs, err := json.Marshal(reviews)
 	// if err != nil {
