@@ -2,7 +2,7 @@ package main
 
 import (
 	// "bufio"
-	// "compress/gzip"
+	"compress/gzip"
 	"context"
 	"crypto/rand"
 	"encoding/hex"
@@ -253,29 +253,29 @@ func WriteJsonFile(alist string) {
 	return
 }
 
-// func WriteGzipFile(alist string) {
-// 	// outfile_json := os.Getenv("ATSGO_JSON_PATH")
-// 	// ofj, _ := os.Open(outfile_json)
-// 	// reader := bufio.NewReader(ofj)
-// 	// content, _ := ioutil.ReadAll(reader)
-// 	fmt.Println(alist)
-// 	var revs string
-// 	revs, err := json.Marshal([]byte(alist))
-// 	if err != nil {
-// 		fmt.Println(err)
-// 	}
-// 	outfile_gzip := os.Getenv("ATSGO_GZIP_PATH")
-// 	f, _ := os.Create(outfile_gzip)
-// 	z, _ := gzip.NewWriterLevel(f, gzip.BestCompression)
-// 	z.Write([]byte(revs))
-// 	z.Close()
+func WriteGzipFile(alist string) {
+	// outfile_json := os.Getenv("ATSGO_JSON_PATH")
+	// ofj, _ := os.Open(outfile_json)
+	// reader := bufio.NewReader(ofj)
+	// content, _ := ioutil.ReadAll(reader)
+	fmt.Println(alist)
+	// var revs string
+	revs, err := json.Marshal([]byte(alist))
+	if err != nil {
+		fmt.Println(err)
+	}
+	outfile_gzip := os.Getenv("ATSGO_GZIP_PATH")
+	f, _ := os.Create(outfile_gzip)
+	z, _ := gzip.NewWriterLevel(f, gzip.BestCompression)
+	z.Write(revs)
+	z.Close()
 // 	// ofj.Close()
 // 	// ofgz, _ := os.Open(outfile_gzip)
 // 	// ofgz.Write(content)
 // 	// ofgz.Close()
 
-// 	return
-// }
+	return
+}
 
 func ProcessReviewsHandler(w http.ResponseWriter, r *http.Request) {
 	// RemoveBackups()
