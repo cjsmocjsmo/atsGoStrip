@@ -2,19 +2,19 @@ package main
 
 import (
 	// "bufio"
-	// "compress/gzip"
+	"compress/gzip"
 	// "context"
 	"crypto/rand"
 	"encoding/hex"
-	// "encoding/json"
+	"encoding/json"
 	"fmt"
 	// "io/ioutil"
 	"log"
 	"net/http"
-	// "os"
+	"os"
 	// "strings"
 	// "time"
-
+	// "html/template"
 	// "github.com/adrianosela/sslmgr"
 
 	"github.com/gorilla/handlers"
@@ -73,31 +73,6 @@ func UUID() (string, error) {
 // 	result, err = collection.Find(ctx, query, options.Find().SetProjection(field))
 // 	return
 // }
-
-func CheckError(err error, msg string) {
-	if err != nil {
-		fmt.Println(msg)
-		log.Println(msg)
-		log.Println(err)
-		panic(err)
-	}
-}
-
-///////////////////////////////////////////////////////////////////////////////
-
-func ShowIndex(w http.ResponseWriter, r *http.Request) {
-	http.Redirect(w, r, "https://alphatreeservice.pages.dev", http.StatusSeeOther)
-	// tmppath := "./assets/index.html"
-	// tmpl := template.Must(template.ParseFiles(tmppath))
-	// tmpl.Execute(w, tmpl)
-}
-
-func ShowAdmin(w http.ResponseWriter, r *http.Request) {
-	http.Redirect(w, r, "https://atsa-dminsvelte.vercel.app", http.StatusSeeOther)
-	// showtmppath := "./assets/admin.html"
-	// showtmpl := template.Must(template.ParseFiles(showtmppath))
-	// showtmpl.Execute(w, showtmpl)
-}
 
 // func AlphaT_Insert(db string, coll string, ablob ReviewStruct) {
 // 	client, ctx, cancel, err := Connect("mongodb://db:27017/atsgodb")
@@ -224,81 +199,84 @@ func ShowAdmin(w http.ResponseWriter, r *http.Request) {
 // 	// 	panic(err)
 // 	// }
 // }
+func CheckError(err error, msg string) {
+	if err != nil {
+		fmt.Println(msg)
+		log.Println(msg)
+		log.Println(err)
+		panic(err)
+	}
+}
 
-// func RemoveBackups() {
-// 	err := os.Remove("/root/backup/backup.gz")
-// 	if err != nil {
-// 		fmt.Println(err)
-// 	}
-// 	err = os.Remove("/root/assets/backup.gz")
-// 	if err != nil {
-// 		fmt.Println(err)
-// 	}
-// 	return
-// }
+///////////////////////////////////////////////////////////////////////////////
 
-// func init() {
-// 	// if AllApprovedReviews() {
-// 	// 	fmt.Println("Db present do nothing")
-// 	// } else {
+func ShowIndex(w http.ResponseWriter, r *http.Request) {
+	http.Redirect(w, r, "https://alphatreeservice.pages.dev", http.StatusSeeOther)
+	// tmppath := "./assets/index.html"
+	// tmpl := template.Must(template.ParseFiles(tmppath))
+	// tmpl.Execute(w, tmpl)
+}
 
-// 	data, err := ioutil.ReadFile("./assets/review1.yaml")
-// 	if err != nil {
-// 		log.Fatal(err)
-// 	}
-// 	var rev1 ReviewStruct
-// 	if err := rev1.Parse(data); err != nil {
-// 		log.Fatal(err)
-// 	}
-// 	fmt.Println(rev1)
-// 	AlphaT_Insert("maindb", "main", rev1)
-// 	os.Remove("./assets/review1.yaml")
+func ShowAdmin(w http.ResponseWriter, r *http.Request) {
+	http.Redirect(w, r, "https://atsa-dminsvelte.vercel.app", http.StatusSeeOther)
+	// showtmppath := "./assets/admin.html"
+	// showtmpl := template.Must(template.ParseFiles(showtmppath))
+	// showtmpl.Execute(w, showtmpl)
+}
 
-// 	data2, err := ioutil.ReadFile("./assets/review2.yaml")
-// 	if err != nil {
-// 		log.Fatal(err)
-// 	}
-// 	var rev2 ReviewStruct
-// 	if err := rev2.Parse(data2); err != nil {
-// 		log.Fatal(err)
-// 	}
-// 	fmt.Println(rev2)
-// 	AlphaT_Insert("maindb", "main", rev2)
-// 	os.Remove("./assets/review2.yaml")
+func RemoveBackups() {
+	err := os.Remove("/root/backup/backup.gz")
+	if err != nil {
+		fmt.Println(err)
+	}
+	err = os.Remove("/root/assets/backup.gz")
+	if err != nil {
+		fmt.Println(err)
+	}
+}
 
-// 	data3, err := ioutil.ReadFile("./assets/fake1.yaml")
-// 	if err != nil {
-// 		log.Fatal(err)
-// 	}
-// 	var rev3 ReviewStruct
-// 	if err := rev3.Parse(data3); err != nil {
-// 		log.Fatal(err)
-// 	}
-// 	fmt.Println(rev3)
-// 	AlphaT_Insert("maindb", "main", rev3)
-// 	os.Remove("./assets/fake1.yaml")
+func WriteJsonFile(alist string) {
+	outfile_json := os.Getenv("ATSGO_JSON_PATH")
+	f, _ := os.Create(outfile_json)
+	f.Write([]byte(alist))
+	f.Close()
+}
 
-// 	data4, err := ioutil.ReadFile("./assets/fake2.yaml")
-// 	if err != nil {
-// 		log.Fatal(err)
-// 	}
-// 	var rev4 ReviewStruct
-// 	if err := rev4.Parse(data4); err != nil {
-// 		log.Fatal(err)
-// 	}
-// 	fmt.Println(rev4)
-// 	AlphaT_Insert("maindb", "main", rev4)
-// 	os.Remove("./assets/fake2.yaml")
+func WriteGzipFile(alist string) {
+	fmt.Println(alist)
+	outfile_gzip := os.Getenv("ATSGO_GZIP_PATH")
+	f, _ := os.Create(outfile_gzip)
+	z, _ := gzip.NewWriterLevel(f, gzip.BestCompression)
+	z.Write([]byte(alist))
+	z.Close()
 
-// 	// os.Remove("/root/backup/backup.gz")
-// 	// }
-// }
+}
+
+func ProcessReviewsHandler(w http.ResponseWriter, r *http.Request) {
+	// RemoveBackups()
+
+	reviews := r.URL.Query().Get("reviewslist")
+	fmt.Printf("%T\n\n", reviews)
+	// fmt.Println(reviews)
+	WriteJsonFile(reviews)
+	WriteGzipFile(reviews)
+
+	// log.Println(reviews)
+	// fmt.Println(reviews)
+
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode("GZIPISCOMPLETENOW")
+	// 	log.Println("AllQuarintineReviews Info Complete")
+	// 	tmpl2 := template.Must(template.ParseFiles("./assets/zoom.html"))
+	// 	tmpl2.Execute(w, pic2)
+}
 
 func main() {
 	// StartServerLogging()
 	r := mux.NewRouter()
 	r.HandleFunc("/", ShowIndex)
 	r.HandleFunc("/admin", ShowAdmin)
+	r.HandleFunc("/Backup", ProcessReviewsHandler)
 	// r.PathPrefix("/static/").Handler(http.StripPrefix("/static/", http.FileServer(http.Dir("./static/"))))
 	r.PathPrefix("/assets/").Handler(http.StripPrefix("/assets/", http.FileServer(http.Dir("./assets/"))))
 
@@ -318,116 +296,6 @@ func main() {
 	// 		handlers.AllowedOrigins([]string{"*"}))(r))
 
 }
-
-// func AllQuarintineReviewsHandler(w http.ResponseWriter, r *http.Request) {
-// 	filter := bson.M{"approved": "no", "quarintine": "yes", "delete": "no"}
-// 	opts := options.Find()
-// 	opts.SetProjection(bson.M{"_id": 0})
-// 	client, ctx, cancel, err := Connect("mongodb://db:27017/atsgodb")
-// 	defer Close(client, ctx, cancel)
-// 	CheckError(err, "MongoDB connection has failed")
-// 	coll := client.Database("maindb").Collection("main")
-// 	cur, err := coll.Find(context.TODO(), filter, opts)
-// 	CheckError(err, "AllQuarintineReviews find has failed")
-// 	var allQRevs []ReviewStruct
-// 	if err = cur.All(context.TODO(), &allQRevs); err != nil {
-// 		log.Fatal(err)
-// 	}
-// 	log.Printf("%s this is AllQuarintineReviews-", allQRevs)
-// 	w.Header().Set("Content-Type", "application/json")
-// 	json.NewEncoder(w).Encode(&allQRevs)
-// }
-
-// func ShowGalleryPage1Handler(w http.ResponseWriter, r *http.Request) {
-// 	filter := bson.M{"page": "1"}
-// 	opts := options.Find()
-// 	opts.SetProjection(bson.M{"_id": 0})
-// 	client, ctx, cancel, err := Connect("mongodb://db:27017/atsgodb")
-// 	defer Close(client, ctx, cancel)
-// 	CheckError(err, "MongoDB connection has failed")
-// 	coll := client.Database("picdb").Collection("portrait")
-// 	cur, err := coll.Find(context.TODO(), filter, opts)
-// 	CheckError(err, "AllQuarintineReviews find has failed")
-// 	var allPage1 []PicStruct
-// 	if err = cur.All(context.TODO(), &allPage1); err != nil {
-// 		log.Fatal(err)
-// 	}
-// 	tmpl2 := template.Must(template.ParseFiles("./assets/gallery.html"))
-// 	tmpl2.Execute(w, allPage1)
-// }
-
-// func ShowGalleryPage2Handler(w http.ResponseWriter, r *http.Request) {
-// 	filter := bson.M{"page": "2"}
-// 	opts := options.Find()
-// 	opts.SetProjection(bson.M{"_id": 0})
-// 	client, ctx, cancel, err := Connect("mongodb://db:27017/atsgodb")
-// 	defer Close(client, ctx, cancel)
-// 	CheckError(err, "MongoDB connection has failed")
-// 	coll := client.Database("picdb").Collection("landscape")
-// 	cur, err := coll.Find(context.TODO(), filter, opts)
-// 	CheckError(err, "AllQuarintineReviews find has failed")
-// 	var allPage2 []PicStruct
-// 	if err = cur.All(context.TODO(), &allPage2); err != nil {
-// 		log.Fatal(err)
-// 	}
-// 	tmpl2 := template.Must(template.ParseFiles("./assets/gallery.html"))
-// 	tmpl2.Execute(w, allPage2)
-// }
-
-// func AtsGoFindOnePic(db string, coll string, filtertype string, filterstring string) PicStruct {
-// 	filter := bson.M{filtertype: filterstring}
-// 	client, ctx, cancel, err := Connect("mongodb://db:27017/atsgodb")
-// 	defer Close(client, ctx, cancel)
-// 	CheckError(err, "AtsGoFindOnePic: MongoDB connection has failed")
-// 	collection := client.Database(db).Collection(coll)
-// 	var results PicStruct
-// 	err = collection.FindOne(context.Background(), filter).Decode(&results)
-// 	if err != nil {
-// 		log.Println("AtsGoFindOnePic: find one has fucked up")
-// 		log.Fatal(err)
-// 	}
-// 	return results
-// }
-
-// func ZoomPic1Handler(w http.ResponseWriter, r *http.Request) {
-// 	// portrait
-// 	pid := r.URL.Query().Get("picid")
-// 	fmt.Println(pid)
-// 	pic := AtsGoFindOnePic("picdb", "portrait", "picid", pid)
-// 	fmt.Println(pic)
-// 	tmpl2 := template.Must(template.ParseFiles("./assets/zoom.html"))
-// 	tmpl2.Execute(w, pic)
-// }
-
-// func AllApprovedReviewsHandler(w http.ResponseWriter, r *http.Request) {
-// 	filter := bson.M{"approved": "yes", "quarintine": "no", "delete": "no"}
-// 	opts := options.Find()
-// 	opts.SetProjection(bson.M{"_id": 0})
-// 	client, ctx, cancel, err := Connect("mongodb://db:27017/atsgodb")
-// 	defer Close(client, ctx, cancel)
-// 	CheckError(err, "MongoDB connection has failed")
-// 	coll := client.Database("maindb").Collection("main")
-// 	cur, err := coll.Find(context.TODO(), filter, opts)
-// 	CheckError(err, "AllReviews find has failed")
-// 	var allRevs []ReviewStruct
-// 	if err = cur.All(context.TODO(), &allRevs); err != nil {
-// 		log.Fatal(err)
-// 	}
-// 	log.Printf("%s this is AllReviews-", allRevs)
-// 	w.Header().Set("Content-Type", "application/json")
-// 	json.NewEncoder(w).Encode(&allRevs)
-// 	log.Println("AllReviews Info Complete")
-// }
-
-// func SetReviewToDeleteHandler(w http.ResponseWriter, r *http.Request) {
-// 	var delUUID string = r.URL.Query().Get("uuid")
-// 	filter := bson.M{"uuid": delUUID}
-// 	update := bson.M{"$set": bson.M{"delete": "yes"}}
-// 	client, ctx, cancel, err := Connect("mongodb://db:27017/atsgodb")
-// 	defer Close(client, ctx, cancel)
-// 	CheckError(err, "MongoDB connection has failed")
-// 	UpdateOne(client, ctx, filter, "maindb", "main", update)
-// }
 
 // func ProcessQuarantineHandler(w http.ResponseWriter, r *http.Request) {
 // 	filter := bson.M{}
