@@ -271,12 +271,18 @@ func ProcessReviewsHandler(w http.ResponseWriter, r *http.Request) {
 	// 	tmpl2.Execute(w, pic2)
 }
 
+func TestHandler(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode("TEST_COMPLETE_IT_WORKS")
+}
+
 func main() {
 	// StartServerLogging()
 	r := mux.NewRouter()
 	r.HandleFunc("/", ShowIndex)
 	r.HandleFunc("/admin", ShowAdmin)
 	r.HandleFunc("/Backup", ProcessReviewsHandler)
+	r.HandleFunc("/Test", TestHandler)
 	// r.PathPrefix("/static/").Handler(http.StripPrefix("/static/", http.FileServer(http.Dir("./static/"))))
 	r.PathPrefix("/assets/").Handler(http.StripPrefix("/assets/", http.FileServer(http.Dir("./assets/"))))
 
