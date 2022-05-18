@@ -11,7 +11,7 @@ RUN go get -v /go/src/atsGo
 RUN CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -o main /go/src/atsGo
 
 # FROM ubuntu:22.04
-# FROM alpine:latest
+FROM alpine:latest
 
 # ARG DEBIAN_FRONTEND=noninteractive
 # ENV TZ=America/New_York
