@@ -10,18 +10,18 @@ RUN export GOPATH=/go/src/atsGo
 RUN go get -v /go/src/atsGo
 RUN CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -o main /go/src/atsGo
 
-FROM ubuntu:22.04
+# FROM ubuntu:22.04
 # FROM alpine:latest
 
-ARG DEBIAN_FRONTEND=noninteractive
-ENV TZ=America/New_York
+# ARG DEBIAN_FRONTEND=noninteractive
+# ENV TZ=America/New_York
 
-RUN \
-    apt-get update && \
-    apt-get -y dist-upgrade && \
-    apt-get -y install golang openssl libssl-dev && \
-    apt-get -y autoclean && \
-    apt-get -y autoremove  
+# RUN \
+#     apt-get update && \
+#     apt-get -y dist-upgrade && \
+#     apt-get -y install golang openssl libssl-dev && \
+#     apt-get -y autoclean && \
+#     apt-get -y autoremove  
 
 WORKDIR /root/
 
