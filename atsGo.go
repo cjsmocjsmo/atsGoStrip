@@ -17,9 +17,10 @@ import (
 	// "html/template"
 	// "github.com/adrianosela/sslmgr"
 	// "golang.org/x/crypto/acme/autocert"
-
-	"github.com/gorilla/handlers"
+	// "github.com/gorilla/handlers"
+	"crypto/tls"
 	"github.com/gorilla/mux"
+	"golang.org/x/crypto/acme/autocert"
 	// "go.mongodb.org/mongo-driver/mongo"
 	// "go.mongodb.org/mongo-driver/mongo/options"
 	// "go.mongodborg/mongo-driver/bson"
@@ -278,6 +279,11 @@ func TestHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func main() {
+	certManager := autocert.Manager{
+		Prompt: autocert.AcceptTOS,
+		// HostPolicy: autocert.HostWhitelist("example.com", "www.example.com"),
+		Cache: autocert.DirCache("certs"),
+	}
 	// StartServerLogging()
 	r := mux.NewRouter()
 	r.HandleFunc("/", ShowIndex)
@@ -287,15 +293,25 @@ func main() {
 	// r.PathPrefix("/static/").Handler(http.StripPrefix("/static/", http.FileServer(http.Dir("./static/"))))
 	r.PathPrefix("/assets/").Handler(http.StripPrefix("/assets/", http.FileServer(http.Dir("./assets/"))))
 
+	server := &http.Server{
+		Addr:    ":https",
+		Handler: r,
+		TLSConfig: &tls.Config{
+			GetCertificate: certManager.GetCertificate,
+		},
+	}
+	go http.ListenAndServe(":http", certManager.HTTPHandler(nil))
+
+	log.Fatal(server.ListenAndServeTLS("", ""))
 	// ss, err := sslmgr.NewSecureServer(r, "atsio.xyz")
 	// if err != nil {
 	// 	log.Fatal(err)
 	// }
 	// ss.ListenAndServe()
 
-	http.ListenAndServe(":80", handlers.CORS(handlers.AllowedHeaders([]string{"X-Requested-With", "Content-Type", "Authorization"}),
-		handlers.AllowedMethods([]string{"GET", "POST", "PUT", "HEAD", "OPTIONS"}),
-		handlers.AllowedOrigins([]string{"*"}))(r))
+	// http.ListenAndServe(":80", handlers.CORS(handlers.AllowedHeaders([]string{"X-Requested-With", "Content-Type", "Authorization"}),
+	// 	handlers.AllowedMethods([]string{"GET", "POST", "PUT", "HEAD", "OPTIONS"}),
+	// 	handlers.AllowedOrigins([]string{"*"}))(r))
 
 	// http.ListenAndServeTLS(":80", "/root/atsio.crt", "/root/atsio.key",
 	// 	handlers.CORS(handlers.AllowedHeaders([]string{"X-Requested-With", "Content-Type", "Authorization"}),
