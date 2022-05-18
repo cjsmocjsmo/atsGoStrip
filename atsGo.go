@@ -8,10 +8,12 @@ import (
 	"encoding/hex"
 	"encoding/json"
 	"fmt"
+
 	// "io/ioutil"
 	"log"
 	"net/http"
 	"os"
+
 	// "strings"
 	// "time"
 	// "html/template"
@@ -19,6 +21,7 @@ import (
 	// "golang.org/x/crypto/acme/autocert"
 	// "github.com/gorilla/handlers"
 	"crypto/tls"
+
 	"github.com/gorilla/mux"
 	"golang.org/x/crypto/acme/autocert"
 	// "go.mongodb.org/mongo-driver/mongo"
@@ -280,9 +283,9 @@ func TestHandler(w http.ResponseWriter, r *http.Request) {
 
 func main() {
 	certManager := autocert.Manager{
-		Prompt: autocert.AcceptTOS,
-		// HostPolicy: autocert.HostWhitelist("example.com", "www.example.com"),
-		Cache: autocert.DirCache("certs"),
+		Prompt:     autocert.AcceptTOS,
+		HostPolicy: autocert.HostWhitelist("atsio.xyz"),
+		Cache:      autocert.DirCache("certs"),
 	}
 	// StartServerLogging()
 	r := mux.NewRouter()
