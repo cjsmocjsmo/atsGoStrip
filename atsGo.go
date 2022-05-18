@@ -226,18 +226,18 @@ func ShowAdmin(w http.ResponseWriter, r *http.Request) {
 }
 
 func RemoveBackups() {
-	err := os.Remove("/root/backup/backup.gz")
+	err := os.Remove("./backup/backup.gz")
 	if err != nil {
 		fmt.Println(err)
 	}
-	err = os.Remove("/root/assets/backup.gz")
+	err = os.Remove("./assets/backup.gz")
 	if err != nil {
 		fmt.Println(err)
 	}
 }
 
 func WriteJsonFile(alist string) {
-	outfile_json := os.Getenv("ATSGO_JSON_PATH")
+	outfile_json := "./assets/backup.json"
 	f, _ := os.Create(outfile_json)
 	f.Write([]byte(alist))
 	f.Close()
