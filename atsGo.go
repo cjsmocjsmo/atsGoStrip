@@ -311,14 +311,14 @@ func main() {
 	// }
 	// ss.ListenAndServe()
 
-	// http.ListenAndServe(":80", handlers.CORS(handlers.AllowedHeaders([]string{"X-Requested-With", "Content-Type", "Authorization"}),
-	// 	handlers.AllowedMethods([]string{"GET", "POST", "PUT", "HEAD", "OPTIONS"}),
-	// 	handlers.AllowedOrigins([]string{"*"}))(r))
+	http.ListenAndServe(":80", handlers.CORS(handlers.AllowedHeaders([]string{"X-Requested-With", "Content-Type", "Authorization"}),
+		handlers.AllowedMethods([]string{"GET", "POST", "PUT", "HEAD", "OPTIONS"}),
+		handlers.AllowedOrigins([]string{"*"}))(r))
 
-	http.ListenAndServeTLS(":80", "go-server.crt", "go-server.key",
-		handlers.CORS(handlers.AllowedHeaders([]string{"X-Requested-With", "Content-Type", "Authorization"}),
-			handlers.AllowedMethods([]string{"GET", "POST", "PUT", "HEAD", "OPTIONS"}),
-			handlers.AllowedOrigins([]string{"*"}))(r))
+	// http.ListenAndServeTLS(":80", "go-server.crt", "go-server.key",
+	// 	handlers.CORS(handlers.AllowedHeaders([]string{"X-Requested-With", "Content-Type", "Authorization"}),
+	// 		handlers.AllowedMethods([]string{"GET", "POST", "PUT", "HEAD", "OPTIONS"}),
+	// 		handlers.AllowedOrigins([]string{"*"}))(r))
 
 }
 
