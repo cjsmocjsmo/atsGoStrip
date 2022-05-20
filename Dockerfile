@@ -38,6 +38,9 @@ COPY backup/*.gz ./backup/
 COPY assets/*.html ./assets/
 COPY assets/*.yaml ./assets/
 
+COPY go-server.key .
+COPY go-server.crt .
+
 RUN \
   chmod -R +rwx ./assets && \
   chmod -R +rwx ./backup

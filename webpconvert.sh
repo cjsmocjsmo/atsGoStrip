@@ -1,3 +1,5 @@
+#!/bin/sh
+
 # for f in /home/charliepi/go/atsGo/assets/gallery/landscape/*.jpg; do
 # cwebp -q 95 -resize 300 0 "$f" -o "${f%.jpg}_thumb.webp"
 # done
