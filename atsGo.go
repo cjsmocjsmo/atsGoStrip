@@ -281,12 +281,6 @@ func TestHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func main() {
-	// certManager := autocert.Manager{
-	// 	Prompt:     autocert.AcceptTOS,
-	// 	HostPolicy: autocert.HostWhitelist("atsio.xyz"),
-	// 	Cache:      autocert.DirCache("certs"),
-	// }
-	// StartServerLogging()
 	r := mux.NewRouter()
 	r.HandleFunc("/", ShowIndex)
 	r.HandleFunc("/admin", ShowAdmin)
@@ -294,22 +288,6 @@ func main() {
 	r.HandleFunc("/Test", TestHandler)
 	// r.PathPrefix("/static/").Handler(http.StripPrefix("/static/", http.FileServer(http.Dir("./static/"))))
 	r.PathPrefix("/assets/").Handler(http.StripPrefix("/assets/", http.FileServer(http.Dir("./assets/"))))
-
-	// server := &http.Server{
-	// 	Addr:    ":https",
-	// 	Handler: r,
-	// 	TLSConfig: &tls.Config{
-	// 		GetCertificate: certManager.GetCertificate,
-	// 	},
-	// }
-	// go http.ListenAndServe(":http", certManager.HTTPHandler(nil))
-
-	// log.Fatal(server.ListenAndServeTLS("", ""))
-	// ss, err := sslmgr.NewSecureServer(r, "atsio.xyz")
-	// if err != nil {
-	// 	log.Fatal(err)
-	// }
-	// ss.ListenAndServe()
 
 	http.ListenAndServe(":80", handlers.CORS(handlers.AllowedHeaders([]string{"X-Requested-With", "Content-Type", "Authorization"}),
 		handlers.AllowedMethods([]string{"GET", "POST", "PUT", "HEAD", "OPTIONS"}),
