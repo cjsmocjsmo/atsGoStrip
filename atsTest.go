@@ -1,13 +1,34 @@
 package main
 
 import (
+	"crypto/tls"
 	"fmt"
+	"golang.org/x/crypto/acme/autocert"
+	"log"
 	"net/http"
 )
 
 func main() {
+
+	certManager := autocert.Manager{
+		Prompt:     autocert.AcceptTOS,
+		HostPolicy: autocert.HostWhitelist("example.com", "www.example.com"),
+		Cache:      autocert.DirCache("certs"),
+	}
+
+	server := &http.Server{
+		Addr: ":https",
+		TLSConfig: &tls.Config{
+			GetCertificate: certManager.GetCertificate,
+		},
+	}
+
 	http.HandleFunc("/", httpRequestHandler)
-	http.ListenAndServeTLS(":8081", "go-server.crt", "go-server.key", nil)
+
+	go http.ListenAndServe(":http", certManager.HTTPHandler(nil))
+
+	log.Fatal(server.ListenAndServeTLS("", ""))
+
 }
 
 func httpRequestHandler(w http.ResponseWriter, req *http.Request) {
