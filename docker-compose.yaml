@@ -2,12 +2,9 @@ version: "3.3"
 
 services:
   atsGo:
-    image: atsgo:1.4.6.5
+    image: atsgo:1.4.6.6
     build: .
     environment:
-      - ATSGO_SERVER_ADDR=http://alphatree.services
-      - ATSGO_SERVER_LOG_PATH=/root/logs/ampgostrip.txt
-      - ATSGO_JSON_PATH=/root/assets/backup.json
       - ATSGO_GZIP_PATH=/root/assets/backup.gz
     networks:
       - atsGo
@@ -28,5 +25,5 @@ volumes:
     driver_opts:
       type: none
       # device: /home/pipi/Data/db
-      device: /root/
+      device: /root/data/
       o: bind 
