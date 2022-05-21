@@ -2,7 +2,7 @@ version: "3.3"
 
 services:
   atsGo:
-    image: atsgo:1.4.4
+    image: atsgo:1.4.5
     build: .
     environment:
       - ATSGO_SERVER_ADDR=http://alphatree.services
