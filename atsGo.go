@@ -281,6 +281,7 @@ func TestHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func main() {
+
 	r := mux.NewRouter()
 	r.HandleFunc("/", ShowIndex)
 	r.HandleFunc("/admin", ShowAdmin)
@@ -289,16 +290,20 @@ func main() {
 	// r.PathPrefix("/static/").Handler(http.StripPrefix("/static/", http.FileServer(http.Dir("./static/"))))
 	r.PathPrefix("/assets/").Handler(http.StripPrefix("/assets/", http.FileServer(http.Dir("./assets/"))))
 
-	http.ListenAndServe(":80", handlers.CORS(handlers.AllowedHeaders([]string{"X-Requested-With", "Content-Type", "Authorization"}),
-		handlers.AllowedMethods([]string{"GET", "POST", "PUT", "HEAD", "OPTIONS"}),
-		handlers.AllowedOrigins([]string{"*"}))(r))
+	// http.ListenAndServe(":80", handlers.CORS(handlers.AllowedHeaders([]string{"X-Requested-With", "Content-Type", "Authorization"}),
+	// 	handlers.AllowedMethods([]string{"GET", "POST", "PUT", "HEAD", "OPTIONS"}),
+	// 	handlers.AllowedOrigins([]string{"*"}))(r))
 
-	// http.ListenAndServeTLS(":80", "go-server.crt", "go-server.key",
-	// 	handlers.CORS(handlers.AllowedHeaders([]string{"X-Requested-With", "Content-Type", "Authorization"}),
-	// 		handlers.AllowedMethods([]string{"GET", "POST", "PUT", "HEAD", "OPTIONS"}),
-	// 		handlers.AllowedOrigins([]string{"*"}))(r))
+	cert := "/etc/letsencrypt/live/atsdo.xyz/cert.pem"
+	key := "/etc/letsencrypt/live/atsdo.xyz/privkey.pem"
+	http.ListenAndServeTLS(":80", cert, key,
+		handlers.CORS(handlers.AllowedHeaders([]string{"X-Requested-With", "Content-Type", "Authorization"}),
+			handlers.AllowedMethods([]string{"GET", "POST", "PUT", "HEAD", "OPTIONS"}),
+			handlers.AllowedOrigins([]string{"*"}))(r))
 
 }
+
+// atsgohttps@atsgo-340504.iam.gserviceaccount.com
 
 // func ProcessQuarantineHandler(w http.ResponseWriter, r *http.Request) {
 // 	filter := bson.M{}
