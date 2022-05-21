@@ -10,8 +10,8 @@ services:
       - atsGo
     ports:
       - 80:80
-    volumes:
-      - atsgovol:/root/
+    # volumes:
+    #   - atsgovol:/root/
       
 networks:
   atsGo:
@@ -19,11 +19,11 @@ networks:
   # NEED A VOULUM TO CERT.PEM
   # NEED A VOLUME TO PRIVKEY.PEM
 
-volumes:
-  atsgovol:
-    driver: local
-    driver_opts:
-      type: none
-      # device: /home/pipi/Data/db
-      device: /etc/letsencrypt/live/atsdo.xyz/
-      o: bind 
+# volumes:
+#   atsgovol:
+#     driver: local
+#     driver_opts:
+#       type: none
+#       # device: /home/pipi/Data/db
+#       device: /etc/letsencrypt/live/atsdo.xyz/
+#       o: bind 
