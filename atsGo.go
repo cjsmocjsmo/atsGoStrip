@@ -294,8 +294,8 @@ func main() {
 	// 	handlers.AllowedMethods([]string{"GET", "POST", "PUT", "HEAD", "OPTIONS"}),
 	// 	handlers.AllowedOrigins([]string{"*"}))(r))
 
-	cert := "/root/fullchain.pem"
-	key := "/root/privkey.pem"
+	cert := "/root/fullchain1.pem"
+	key := "/root/privkey1.pem"
 	http.ListenAndServeTLS(":80", cert, key, r)
 
 	// http.ListenAndServeTLS(":80", cert, key,
