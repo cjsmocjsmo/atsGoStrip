@@ -13,7 +13,7 @@ sudo snap install --classic docker;
 sudo snap install --classic certbot;
 sudo ln -s /snap/bin/certbot /usr/bin/certbot;
 sudo certbot certonly --standalone --preferred-challenges http -d atsdo.xyz;
-cp /etc/letsencrypt/archive/atsdo.xyz/*.pem /root/
+cp /etc/letsencrypt/archive/atsdo.xyz/*.pem /root/atsGoStrip/
 
     # --cert-path /root/data --key-path /root/data --fullchain-path /root/data --chain-path /root/data;
 

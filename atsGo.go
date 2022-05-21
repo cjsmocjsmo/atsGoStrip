@@ -296,7 +296,7 @@ func main() {
 
 	// cert := "fullchain1.pem"
 	// key := "privkey1.pem"
-	http.ListenAndServeTLS(":80", "fullchain1.pem", "privkey1.pem", r)
+	http.ListenAndServeTLS(":80", "cert1.pem", "privkey1.pem", r)
 
 	// http.ListenAndServeTLS(":80", cert, key,
 	// 	handlers.CORS(handlers.AllowedHeaders([]string{"X-Requested-With", "Content-Type", "Authorization"}),
