@@ -11,7 +11,7 @@ sudo snap install core;
 sudo snap refresh core;
 sudo snap install --classic certbot;
 sudo ln -s /snap/bin/certbot /usr/bin/certbot;
-sudo certbot certonly -v --standalone -d atsio.xyz;
+sudo certbot certonly --standalone --preferred-challenges http -d atsdo.xyz;
 
     # --cert-path /root/data --key-path /root/data --fullchain-path /root/data --chain-path /root/data;
 

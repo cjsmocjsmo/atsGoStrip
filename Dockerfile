@@ -17,7 +17,6 @@ WORKDIR /root/
 COPY --from=builder /go/src/atsGo/main .
 
 RUN \
-  mkdir ./data && \
   mkdir ./assets && \
   mkdir ./backup 
 

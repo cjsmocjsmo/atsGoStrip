@@ -11,7 +11,7 @@ services:
     ports:
       - 80:80
     volumes:
-      - atsgovol:/root/data
+      - atsgovol:/root/
       
 networks:
   atsGo:
@@ -25,5 +25,5 @@ volumes:
     driver_opts:
       type: none
       # device: /home/pipi/Data/db
-      device: /root/data/
+      device: /etc/letsencrypt/live/atsdo.xyz/
       o: bind 
