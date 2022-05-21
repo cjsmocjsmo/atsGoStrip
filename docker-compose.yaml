@@ -2,7 +2,7 @@ version: "3.3"
 
 services:
   atsGo:
-    image: atsgo:1.4.6.3
+    image: atsgo:1.4.6.5
     build: .
     environment:
       - ATSGO_SERVER_ADDR=http://alphatree.services
@@ -14,7 +14,7 @@ services:
     ports:
       - 80:80
     volumes:
-      - atsgovol:/root/data/
+      - atsgovol:/root/data
       
 networks:
   atsGo:
@@ -28,5 +28,5 @@ volumes:
     driver_opts:
       type: none
       # device: /home/pipi/Data/db
-      device: /etc/letsencrypt/archive/atsdo.xyz
+      device: /root/
       o: bind 
