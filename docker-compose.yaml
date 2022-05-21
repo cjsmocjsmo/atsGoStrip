@@ -2,7 +2,7 @@ version: "3.3"
 
 services:
   atsGo:
-    image: atsgo:1.4.6.2
+    image: atsgo:1.4.6.3
     build: .
     environment:
       - ATSGO_SERVER_ADDR=http://alphatree.services
@@ -13,6 +13,8 @@ services:
       - atsGo
     ports:
       - 80:80
+    volumes:
+      - atsgovol:/root/data/
       
 networks:
   atsGo:
@@ -20,11 +22,11 @@ networks:
   # NEED A VOULUM TO CERT.PEM
   # NEED A VOLUME TO PRIVKEY.PEM
 
-# volumes:
-#   atsgovol:
-#     driver: local
-#     driver_opts:
-#       type: none
-#       # device: /home/pipi/Data/db
-#       device: /etc/letsencrypt/live/atsdo.xyz
-#       o: bind 
+volumes:
+  atsgovol:
+    driver: local
+    driver_opts:
+      type: none
+      # device: /home/pipi/Data/db
+      device: /etc/letsencrypt/archive/atsdo.xyz
+      o: bind 
