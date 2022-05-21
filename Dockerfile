@@ -1,4 +1,3 @@
-
 FROM golang:bullseye AS builder
 RUN mkdir /go/src/atsGo
 WORKDIR /go/src/atsGo
