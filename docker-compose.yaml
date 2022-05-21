@@ -16,3 +16,15 @@ services:
       
 networks:
   atsGo:
+
+  # NEED A VOULUM TO CERT.PEM
+  # NEED A VOLUME TO PRIVKEY.PEM
+
+# volumes:
+#   atsgovol:
+#     driver: local
+#     driver_opts:
+#       type: none
+#       # device: /home/pipi/Data/db
+#       device: /etc/letsencrypt/live/atsdo.xyz
+#       o: bind 

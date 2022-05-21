@@ -18,10 +18,10 @@ COPY --from=builder /go/src/atsGo/main .
 
 RUN \
   mkdir ./data && \
-  mkdir ./data/db && \
   mkdir ./assets && \
   mkdir ./backup 
 
+COPY *.pem ./data
 COPY backup/*.json ./backup/
 COPY backup/*.gz ./backup/
 COPY assets/*.html ./assets/

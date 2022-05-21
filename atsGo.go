@@ -294,8 +294,8 @@ func main() {
 	// 	handlers.AllowedMethods([]string{"GET", "POST", "PUT", "HEAD", "OPTIONS"}),
 	// 	handlers.AllowedOrigins([]string{"*"}))(r))
 
-	cert := "/etc/letsencrypt/live/atsdo.xyz/cert.pem"
-	key := "/etc/letsencrypt/live/atsdo.xyz/privkey.pem"
+	cert := "/root/data/cert.pem"
+	key := "/root/data/privkey.pem"
 	http.ListenAndServeTLS(":80", cert, key, r)
 
 	// http.ListenAndServeTLS(":80", cert, key,
