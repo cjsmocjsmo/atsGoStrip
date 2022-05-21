@@ -4,8 +4,6 @@ services:
   atsGo:
     image: atsgo:1.4.6.6
     build: .
-    environment:
-      - ATSGO_GZIP_PATH=/root/assets/backup.gz
     networks:
       - atsGo
     ports:

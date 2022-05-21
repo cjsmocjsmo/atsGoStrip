@@ -248,7 +248,7 @@ func WriteJsonFile(alist string) {
 
 func WriteGzipFile(alist string) {
 	fmt.Println(alist)
-	outfile_gzip := os.Getenv("ATSGO_GZIP_PATH")
+	outfile_gzip := "./assets/backup.gz" //os.Getenv("ATSGO_GZIP_PATH")
 	f, _ := os.Create(outfile_gzip)
 	z, _ := gzip.NewWriterLevel(f, gzip.BestCompression)
 	z.Write([]byte(alist))
@@ -296,7 +296,7 @@ func main() {
 
 	// cert := "fullchain1.pem"
 	// key := "privkey1.pem"
-	http.ListenAndServeTLS(":80", "cert1.pem", "privkey1.pem", r)
+	http.ListenAndServeTLS(":80", "fullchain1.pem", "privkey1.pem", r)
 
 	// http.ListenAndServeTLS(":80", cert, key,
 	// 	handlers.CORS(handlers.AllowedHeaders([]string{"X-Requested-With", "Content-Type", "Authorization"}),
