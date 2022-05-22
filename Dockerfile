@@ -30,6 +30,8 @@ RUN \
   chmod -R +rwx ./assets && \
   chmod -R +rwx ./backup
 
+EXPOSE 80
+
 STOPSIGNAL SIGINT
 CMD ["./main"]
 
