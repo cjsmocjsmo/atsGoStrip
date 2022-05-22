@@ -20,7 +20,7 @@ RUN \
   mkdir ./assets && \
   mkdir ./backup 
 
-COPY *.pem ./
+
 COPY backup/*.json ./backup/
 COPY backup/*.gz ./backup/
 COPY assets/*.html ./assets/

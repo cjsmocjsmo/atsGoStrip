@@ -19,7 +19,7 @@ import (
 	// "html/template"
 	// "github.com/adrianosela/sslmgr"
 	// "golang.org/x/crypto/acme/autocert"
-	// "github.com/gorilla/handlers"
+	"github.com/gorilla/handlers"
 	// "crypto/tls"
 
 	"github.com/gorilla/mux"
@@ -290,13 +290,13 @@ func main() {
 	// r.PathPrefix("/static/").Handler(http.StripPrefix("/static/", http.FileServer(http.Dir("./static/"))))
 	r.PathPrefix("/assets/").Handler(http.StripPrefix("/assets/", http.FileServer(http.Dir("./assets/"))))
 
-	// http.ListenAndServe(":80", handlers.CORS(handlers.AllowedHeaders([]string{"X-Requested-With", "Content-Type", "Authorization"}),
-	// 	handlers.AllowedMethods([]string{"GET", "POST", "PUT", "HEAD", "OPTIONS"}),
-	// 	handlers.AllowedOrigins([]string{"*"}))(r))
+	http.ListenAndServe(":80", handlers.CORS(handlers.AllowedHeaders([]string{"X-Requested-With", "Content-Type", "Authorization"}),
+		handlers.AllowedMethods([]string{"GET", "POST", "PUT", "HEAD", "OPTIONS"}),
+		handlers.AllowedOrigins([]string{"*"}))(r))
 
 	// cert := "fullchain1.pem"
 	// key := "privkey1.pem"
-	http.ListenAndServeTLS(":80", "cert1.pem", "privkey1.pem", r)
+	// http.ListenAndServeTLS(":80", "fullchain1.pem", "privkey1.pem", r)
 
 	// http.ListenAndServeTLS(":80", cert, key,
 	// 	handlers.CORS(handlers.AllowedHeaders([]string{"X-Requested-With", "Content-Type", "Authorization"}),
