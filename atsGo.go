@@ -215,7 +215,7 @@ func CheckError(err error, msg string) {
 ///////////////////////////////////////////////////////////////////////////////
 
 func ShowIndex(w http.ResponseWriter, r *http.Request) {
-	http.Redirect(w, r, "https://alphatreeservice.pages.dev", http.StatusSeeOther)
+	http.Redirect(w, r, "https://alphatreeservicetest.pages.dev", http.StatusSeeOther)
 	// tmppath := "./assets/index.html"
 	// tmpl := template.Must(template.ParseFiles(tmppath))
 	// tmpl.Execute(w, tmpl)
